@@ -1,0 +1,188 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+/* =========================
+   PAGE BACKGROUND
+========================= */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f4f6f8, #eef1f5);
+}
+
+/* =========================
+   LOGIN CARD
+========================= */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   HEADINGS
+========================= */
+.login-card h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+}
+
+.subtitle {
+  margin-top: 6px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* =========================
+   FORM
+========================= */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================
+   ERROR
+========================= */
+.login-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =========================
+   FIELDS
+========================= */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.field input {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.field input::placeholder {
+  color: #9ca3af;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.field input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+/* =========================
+   PASSWORD FIELD
+========================= */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 42px;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #6b7280;
+  padding: 4px;
+}
+
+.eye-btn:hover {
+  color: #111827;
+}
+
+/* =========================
+   LOGIN BUTTON
+========================= */
+.login-form button[type="submit"] {
+  margin-top: 8px;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-form button[type="submit"]:hover {
+  background: linear-gradient(135deg, #1e40af, #1d4ed8);
+}
+
+.login-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer-text {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+
+/* Ensure wrappers take full width */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Ensure password input matches email input exactly */
+.password-wrapper input {
+  width: 100%;
+  height: 44px; /* same as .field input */
+  padding-right: 42px;
+  box-sizing: border-box;
+}
