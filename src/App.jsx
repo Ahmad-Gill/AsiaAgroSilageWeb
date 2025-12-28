@@ -6,6 +6,7 @@ import StockIn from "./pages/stock/stockIn";
 import StockOut from "./pages/stock/stockOut";
 import TotalStock from "./pages/stock/TotalStock";
 
+
 function App() {
   return (
     <Routes>
