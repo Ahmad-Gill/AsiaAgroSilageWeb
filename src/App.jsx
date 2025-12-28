@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/mainLayout";
+import MainLayout from "./layouts/mainLayout.jsx";
+
 
 import Login from "./pages/auth/login";
 import StockIn from "./pages/stock/stockIn";
