@@ -8,7 +8,7 @@ export default defineConfig({
     host: '0.0.0.0',  // Allow the app to be accessible on all IP addresses
     port: 8080,        // You can use any port you prefer
     allowedHosts: [
-      'https://app-asia-agro-silage-dev0suc-fe-akc7ascghmgwc8ay.centralus-01.azurewebsites.net/'  // Add your Azure host here
+      'app-asia-agro-silage-dev0suc-fe-akc7ascghmgwc8ay.centralus-01.azurewebsites.net'  // Add your Azure host here
     ],
   },
 })
