@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; 
 import PopupAlert from "../../components/popupAlert/PopupAlert"; // Import the PopupAlert component
-import "./Bunker.css";
+import "./bunker.css";
 
 // Get API base URL and access token from environment or localStorage
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
