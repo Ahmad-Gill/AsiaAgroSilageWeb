@@ -1,0 +1,162 @@
+/* Bunker Container */
+.bunker-container {
+  padding: 30px;
+  background-color: #f9f9f9; /* Slightly lighter background for better contrast */
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  max-width: 900px;
+  margin: 30px auto; /* Center the container with margin */
+  transition: box-shadow 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.bunker-container:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Increased shadow on hover */
+}
+
+/* Header Styling */
+.bunker-container h1 {
+  text-align: center;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px; /* Add space below header */
+}
+
+/* Form Styling */
+.bunker-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bunker-form input {
+  padding: 12px;
+  font-size: 16px;
+  margin-right: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 250px;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+.bunker-form button {
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.bunker-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Bunker List */
+.bunker-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bunker-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: #fff;
+  margin: 8px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on each list item */
+  font-size: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.bunker-list li:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Add stronger shadow on hover */
+}
+
+/* Button inside bunker list item */
+.bunker-list button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.bunker-list button:hover {
+  background-color: #218838;
+}
+
+/* Add a small margin to the 'View Details' button */
+.bunker-list button + button {
+  margin-left: 10px;
+}
+
+/* Responsive Styling for smaller screens */
+@media (max-width: 768px) {
+  .bunker-container {
+    padding: 20px;
+  }
+
+  .bunker-container h1 {
+    font-size: 24px;
+  }
+
+  .bunker-form {
+    flex-direction: column;
+  }
+
+  .bunker-form input,
+  .bunker-form button {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .bunker-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bunker-list li button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.bunker-actions {
+  display: flex;
+  gap: 10px; /* Add space between buttons */
+}
+
+.bunker-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.bunker-actions button:first-child {
+  background-color: #007bff; /* Blue for 'View Details' */
+  color: white;
+}
+
+.bunker-actions button:first-child:hover {
+  background-color: #0056b3;
+}
+
+.bunker-actions button:last-child {
+  background-color: #dc3545; /* Red for 'Delete' */
+  color: white;
+}
+
+.bunker-actions button:last-child:hover {
+  background-color: #c82333;
+}
+

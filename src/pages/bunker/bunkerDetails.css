@@ -1,0 +1,19 @@
+.bunker-details-container {
+  padding: 20px;
+  background-color: #f4f4f9;
+  border-radius: 8px;
+}
+
+.bunker-details-container h1 {
+  text-align: center;
+  color: #333;
+}
+
+.bunker-info {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.bunker-info p {
+  margin: 10px 0;
+}

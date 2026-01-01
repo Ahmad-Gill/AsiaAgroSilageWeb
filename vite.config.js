@@ -1,13 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-// https://vite.dev/config/
+import { fileURLToPath, URL } from 'node:url';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+ 
 export default defineConfig({
-  plugins: [react()],
-preview: {
-  host: '0.0.0.0',
-  port: 8080,
-  allowedHosts: ['*'], // Wildcard allows all hosts
-},
-
-})
+  plugins: [react(), tailwindcss()],
+  server:{
+    port: 5173,
+    host:'0.0.0.0'
+  },
+  base: process.env.VITE_BASE_URL || '/',
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  build: {
+    chunkSizeWarningLimit: 3000,
+  },
+});
