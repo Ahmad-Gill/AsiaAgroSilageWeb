@@ -3,7 +3,7 @@ name: Build and deploy Node.js app to Azure Web App - app-asia-agro-silage-dev0s
 on:
   push:
     branches:
-      - main
+
   workflow_dispatch:
 
 permissions:          # 🔥 REQUIRED (THIS WAS MISSING)
