@@ -8,6 +8,7 @@ import StockOut from "./pages/stock/stockOut";
 import TotalStock from "./pages/stock/TotalStock";
 import BunkerDetails from "./pages/bunker/bunkerDetails";
 import BUnker from "./pages/bunker/bunker";
+import SpareParts from "./pages/spareParts/spareParts";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/stock/out" element={<StockOut />} />
         <Route path="/stock" element={<TotalStock />} />
        <Route path="/bunker" element={<BUnker />} />
+        <Route path="/spare-parts" element={<SpareParts />} />
           <Route path="/bunkerdetails/:id" element={<BunkerDetails />} />
       </Route>
 

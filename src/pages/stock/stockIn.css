@@ -1,3 +1,6 @@
+/* =========================
+   CONTAINER
+========================= */
 .stockin-container {
   max-width: 1000px;
   margin: 24px auto;
@@ -14,14 +17,18 @@
   color: #1f2937;
 }
 
-/* FORM */
+/* =========================
+   FORM
+========================= */
 .stockin-form {
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
 
-/* SECTION */
+/* =========================
+   SECTION GRID
+========================= */
 .section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -43,7 +50,9 @@
   margin-bottom: 8px;
 }
 
-/* FIELD */
+/* =========================
+   FIELD
+========================= */
 .field {
   display: flex;
   flex-direction: column;
@@ -59,7 +68,9 @@
   color: #6b7280;
 }
 
-/* INPUTS */
+/* =========================
+   INPUTS
+========================= */
 .field input,
 .field textarea,
 .field select {
@@ -67,6 +78,8 @@
   font-size: 14px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field textarea {
@@ -79,7 +92,24 @@
   font-weight: 600;
 }
 
-/* SUBMIT */
+/* =========================
+   ERROR STATES
+========================= */
+.field.error input,
+.field.error textarea,
+.field.error select {
+  border-color: #dc2626;
+  background-color: #fff5f5;
+}
+
+.error-text {
+  font-size: 12px;
+  color: #dc2626;
+}
+
+/* =========================
+   SUBMIT
+========================= */
 .submit-row {
   display: flex;
   justify-content: flex-end;
@@ -98,27 +128,79 @@
 .submit-row button:hover {
   background: #3293aa;
 }
+
+/* =========================
+   INFO
+========================= */
 .info-text {
   font-size: 12px;
-  color: #059669; /* green */
-}
-
-.error-text {
-  font-size: 12px;
-  color: #dc2626; /* red */
-}
-.field.error input,
-.field.error textarea,
-.field.error select {
-  border-color: #dc2626;
-  background-color: #fff5f5;
-}
-
-.error-text {
-  font-size: 12px;
-  color: #dc2626;
+  color: #059669;
 }
 
 .uppercase {
   text-transform: uppercase;
+}
+
+/* =========================
+   TABLET (≤ 1024px)
+========================= */
+@media (max-width: 1024px) {
+  .stockin-container {
+    padding: 24px;
+  }
+
+  .section {
+    gap: 14px 18px;
+  }
+}
+
+/* =========================
+   MOBILE (≤ 768px)
+========================= */
+@media (max-width: 768px) {
+  .stockin-container {
+    margin: 16px;
+    padding: 20px;
+  }
+
+  .section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .submit-row {
+    justify-content: center;
+  }
+
+  .submit-row button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   SMALL PHONES (≤ 480px)
+========================= */
+@media (max-width: 480px) {
+  .stockin-container {
+    padding: 16px;
+  }
+
+  .stockin-container h2 {
+    font-size: 20px;
+  }
+
+  .section h4 {
+    font-size: 14px;
+  }
+
+  .field label {
+    font-size: 12px;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    font-size: 13px;
+    padding: 10px;
+  }
 }

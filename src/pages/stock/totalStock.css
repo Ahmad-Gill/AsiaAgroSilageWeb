@@ -1,13 +1,18 @@
-/* ===== Page ===== */
+/* =========================
+   PAGE
+========================= */
 .total-stock-page {
   padding: 24px;
 }
 
-/* ===== Filters ===== */
+/* =========================
+   FILTERS
+========================= */
 .filters {
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .filters input,
@@ -15,6 +20,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
+  min-width: 160px;
 }
 
 .filters button {
@@ -24,20 +30,28 @@
   background: #2563eb;
   color: #fff;
   cursor: pointer;
+  white-space: nowrap;
 }
 
-/* ===== Table Container ===== */
-.table-container {
+/* =========================
+   TABLE CONTAINERS
+========================= */
+.table-container,
+.stock-out-container {
   position: relative;
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  overflow-x: auto; /* 👈 KEY FOR MOBILE */
+  margin-bottom: 24px;
 }
 
-/* ===== Universal Table ===== */
+/* =========================
+   UNIVERSAL TABLE
+========================= */
 .universal-table {
   width: 100%;
+  min-width: 900px; /* 👈 prevents column squeeze */
   border-collapse: collapse;
   font-size: 14px;
 }
@@ -51,20 +65,25 @@
   padding: 14px 12px;
   border-bottom: 1px solid #e5e7eb;
   text-align: center;
+  white-space: nowrap;
 }
 
 .universal-table tbody tr:hover {
   background: #f1f5f9;
 }
 
-/* ===== Empty State ===== */
+/* =========================
+   EMPTY STATE
+========================= */
 .empty {
   padding: 30px;
   color: #6b7280;
   text-align: center;
 }
 
-/* ===== Status ===== */
+/* =========================
+   STATUS
+========================= */
 .pending {
   color: #dc2626;
   font-weight: 600;
@@ -75,7 +94,9 @@
   font-weight: 600;
 }
 
-/* ===== Actions ===== */
+/* =========================
+   ACTIONS
+========================= */
 .actions {
   display: flex;
   gap: 8px;
@@ -100,7 +121,9 @@
   cursor: pointer;
 }
 
-/* ===== Loader Overlay ===== */
+/* =========================
+   LOADER
+========================= */
 .table-loader {
   position: absolute;
   inset: 0;
@@ -115,7 +138,9 @@
   font-weight: 500;
 }
 
-/* ===== Spinner ===== */
+/* =========================
+   SPINNER
+========================= */
 .spinner {
   width: 26px;
   height: 26px;
@@ -128,5 +153,53 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   TABLET (≤ 1024px)
+========================= */
+@media (max-width: 1024px) {
+  .total-stock-page {
+    padding: 16px;
+  }
+
+  .universal-table {
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   MOBILE (≤ 768px)
+========================= */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters input,
+  .filters select,
+  .filters button {
+    width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   SMALL PHONES (≤ 480px)
+========================= */
+@media (max-width: 480px) {
+  .universal-table {
+    font-size: 12px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    padding: 6px;
+    font-size: 12px;
   }
 }

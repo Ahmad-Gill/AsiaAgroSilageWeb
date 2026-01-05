@@ -52,6 +52,12 @@ function Navbar() {
           >
             EXPENSES
           </li>
+                    <li
+            className={active === "SPARE PARTS" ? "active" : ""}
+            onClick={() => handleNavClick("SPARE PARTS", "/spare-parts")}
+          >
+            SPARE PARTS
+          </li>
 
           {/* STOCK */}
           {/* STOCK */}
