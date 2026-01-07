@@ -23,6 +23,7 @@ const BunkerDetails = () => {
   });
 
   /* ================= STATE ================= */
+  const [summaryData, setSummaryData] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [buys, setBuys] = useState([]);
   const [sales, setSales] = useState([]);
@@ -76,6 +77,26 @@ const BunkerDetails = () => {
       console.error("Update buy failed", err);
     }
   };
+  useEffect(() => {
+  const fetchBunkerSummary = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}admin/bunker-summary`, {
+        params: { bunker: id },
+        headers: {
+          Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setSummaryData(response.data.data); // store the fetched data
+    } catch (error) {
+      console.error("Failed to fetch bunker summary:", error);
+    }
+  };
+
+  fetchBunkerSummary();
+}, [id]);
+const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
+
   const deleteBuy = async (id) => {
     if (!window.confirm("Delete this purchase?")) return;
     setPopup({ open: true, message: "Updating...", status: 200, loading: true });
@@ -500,6 +521,116 @@ const BunkerDetails = () => {
 
 
       </div>
+
+
+    <div className="bunker-details-container">
+      <PopupAlert
+        open={popup.open}
+        message={popup.message}
+        status={popup.status}
+        loading={popup.loading}
+        onClose={() => setPopup({ ...popup, open: false })}
+      />
+
+      {/* Silage Summary */}
+      {summaryData && summaryData.bunkerAddSilagesSummary && (
+        <div className="summary-section">
+          <h3>Silage Summary</h3>
+          <table className="summary-table">
+            <tbody>
+              <tr>
+                <td>Total Kgs Bought</td>
+                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalKgsBought)}</td>
+              </tr>
+              <tr>
+                <td>Total Discount Taken</td>
+                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalDiscountTaken)}</td>
+              </tr>
+              <tr>
+                <td>Total Amount Spent</td>
+                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalAmountSpent)}</td>
+              </tr>
+              <tr>
+                <td>Total Amount Paid</td>
+                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalAmountPaid)}</td>
+              </tr>
+              <tr>
+                <td>Total Remaining Amount to Pay</td>
+                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalRemainingAmountToPay)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Expense Summary */}
+      {summaryData && summaryData.bunkerExpensesSummary && (
+        <div className="summary-section">
+          <h3>Expense Summary</h3>
+          <table className="summary-table">
+            <tbody>
+              <tr>
+                <td>Total Expense Amount</td>
+                <td>{formatValue(summaryData.bunkerExpensesSummary.totalExpenseAmount)}</td>
+              </tr>
+              <tr>
+                <td>Total Amount Paid (Expenses)</td>
+                <td>{formatValue(summaryData.bunkerExpensesSummary.totalAmountPaid)}</td>
+              </tr>
+              <tr>
+                <td>Total Remaining Amount to Pay (Expenses)</td>
+                <td>{formatValue(summaryData.bunkerExpensesSummary.totalRemainingAmountToPayForExpenses)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Sales Summary */}
+      {summaryData && summaryData.bunkerSalesSummary && (
+        <div className="summary-section">
+          <h3>Sales Summary</h3>
+          <table className="summary-table">
+            <tbody>
+              <tr>
+                <td>Total Amount Remaining to Recover</td>
+                <td>{formatValue(summaryData.bunkerSalesSummary.totalAmountRemainingToRecover)}</td>
+              </tr>
+              <tr>
+                <td>Total Kgs Sold</td>
+                <td>{formatValue(summaryData.bunkerSalesSummary.totalKgsSold)}</td>
+              </tr>
+              <tr>
+                <td>Total Discount Given</td>
+                <td>{formatValue(summaryData.bunkerSalesSummary.totalDiscountGiven)}</td>
+              </tr>
+              <tr>
+                <td>Total Amount Paid (Sales)</td>
+                <td>{formatValue(summaryData.bunkerSalesSummary.totalAmountPaid)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Available Stock */}
+      {summaryData && (
+        <div className="summary-section">
+          <h3>Available Stock</h3>
+          <table className="summary-table">
+            <tbody>
+              <tr>
+                <td>Available Stock</td>
+                <td>{formatValue(summaryData.availableStock)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+
+
+
 
       <h2>Expenses</h2>
 

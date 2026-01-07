@@ -165,3 +165,27 @@
 .btn-delete:hover {
   background: #fee2e2;        /* red-100 */
 }
+
+
+
+.summary-table {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.summary-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.summary-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}

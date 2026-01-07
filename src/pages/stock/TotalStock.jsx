@@ -8,11 +8,13 @@ function TotalStock() {
   const [stocks, setStocks] = useState([]);
   const [stockOuts, setStockOuts] = useState([]); // State to hold stock-out data
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    keyword: "",
-    date: "",
-    limit: 10,
-  });
+const [filters, setFilters] = useState({
+  keyword: "",
+  date: "",
+  paymentStatus: "all", // paid | unpaid | all
+  limit: 10,
+});
+
 
   const [stockOutFilters, setStockOutFilters] = useState({
     keyword: "",
@@ -39,11 +41,15 @@ function TotalStock() {
     try {
       setLoading(true);
 
-      const params = {
-        limit: filters.limit,
-        ...(filters.keyword && { keyword: filters.keyword }),
-        ...(filters.date && { date: filters.date }),
-      };
+const params = {
+  limit: filters.limit,
+  ...(filters.keyword && { keyword: filters.keyword }),
+  ...(filters.date && { date: filters.date }),
+  ...(filters.paymentStatus !== "all" && {
+    paymentStatus: filters.paymentStatus,
+  }),
+};
+
 
       const res = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}admin/stock`,
@@ -208,6 +214,17 @@ function TotalStock() {
           value={filters.date}
           onChange={(e) => setFilters({ ...filters, date: e.target.value })}
         />
+        <select
+  value={filters.paymentStatus}
+  onChange={(e) =>
+    setFilters({ ...filters, paymentStatus: e.target.value })
+  }
+>
+  <option value="all">All</option>
+  <option value="paid">Paid</option>
+  <option value="unpaid">Unpaid</option>
+</select>
+
 
         <input
           type="number"

@@ -1,0 +1,85 @@
+/* sale.css */
+
+/* General styles for the page */
+.sale-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form container */
+.sale-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input fields */
+.sale-form input,
+.sale-form textarea,
+.sale-form select {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.sale-form input:disabled {
+  background-color: #f0f0f0;
+}
+
+/* Submit button */
+.sale-form button {
+  padding: 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.sale-form button:hover {
+  background-color: #45a049;
+}
+
+/* Label styles */
+.sale-form label {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* Total/Remaining Amount Styling */
+.total-amount,
+.remaining-amount {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .sale-form {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .sale-page {
+    flex-direction: column;
+    padding: 10px;
+  }
+}

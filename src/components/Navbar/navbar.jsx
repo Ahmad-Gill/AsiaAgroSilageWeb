@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios"; // Import axios for making API requests
 import "./navbar.css";
 import NavbarMenu from "./NavbarMenu";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const ADMIN_ACCESS_TOKEN =
+  localStorage.getItem("adminToken") || import.meta.env.VITE_ADMIN_ACCESS_TOKEN;
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -9,6 +15,23 @@ function Navbar() {
 
   const [active, setActive] = useState("HOME");
   const [dropdown, setDropdown] = useState(null);
+  const [user, setUser] = useState(null); // State to store the user data
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}admin/user`, {
+          headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
+        });
+        setUser(response.data.data[0]); // Assuming the response has a 'data' field
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData(); // Fetch user data when the component mounts
+  }, []);
 
   // Sync active menu with URL
   useEffect(() => {
@@ -52,7 +75,8 @@ function Navbar() {
           >
             EXPENSES
           </li>
-                    <li
+
+          <li
             className={active === "SPARE PARTS" ? "active" : ""}
             onClick={() => handleNavClick("SPARE PARTS", "/spare-parts")}
           >
@@ -60,48 +84,42 @@ function Navbar() {
           </li>
 
           {/* STOCK */}
-          {/* STOCK */}
-<li
-  className={`dropdown-wrapper ${active === "STOCK" ? "active" : ""}`}
-  onMouseEnter={() => setDropdown("STOCK")}
-  onMouseLeave={() => setDropdown(null)}
->
-  <span className="dropdown-trigger">STOCK ▾</span>
-
-  {dropdown === "STOCK" && (
-    <NavbarMenu
-      items={[
-        { label: "TOTAL STOCK", path: "/stock" },
-        { label: "STOCK IN", path: "/stock/in" },
-        { label: "STOCK OUT", path: "/stock/out" },
-      ]}
-      onSelect={() => setDropdown(null)}
-    />
-  )}
-</li>
-
+          <li
+            className={`dropdown-wrapper ${active === "STOCK" ? "active" : ""}`}
+            onMouseEnter={() => setDropdown("STOCK")}
+            onMouseLeave={() => setDropdown(null)}
+          >
+            <span className="dropdown-trigger">STOCK ▾</span>
+            {dropdown === "STOCK" && (
+              <NavbarMenu
+                items={[
+                  { label: "TOTAL STOCK", path: "/stock" },
+                  { label: "STOCK IN", path: "/stock/in" },
+                  { label: "STOCK OUT", path: "/stock/out" },
+                ]}
+                onSelect={() => setDropdown(null)}
+              />
+            )}
+          </li>
 
           {/* SALES */}
-          {/* SALES */}
-<li
-  className={`dropdown-wrapper ${active === "SALES" ? "active" : ""}`}
-  onMouseEnter={() => setDropdown("SALES")}
-  onMouseLeave={() => setDropdown(null)}
->
-  <span className="dropdown-trigger">SALES ▾</span>
-
-  {dropdown === "SALES" && (
-    <NavbarMenu
-      items={[
-        { label: "SALES", path: "/sales" },
-        { label: "TOTAL SALES", path: "/sales/total" },
-        { label: "CLIENT LEDGER", path: "/sales/ledger" },
-      ]}
-      onSelect={() => setDropdown(null)}
-    />
-  )}
-</li>
-
+          <li
+            className={`dropdown-wrapper ${active === "SALES" ? "active" : ""}`}
+            onMouseEnter={() => setDropdown("SALES")}
+            onMouseLeave={() => setDropdown(null)}
+          >
+            <span className="dropdown-trigger">SALES ▾</span>
+            {dropdown === "SALES" && (
+              <NavbarMenu
+                items={[
+                  { label: "SALES", path: "/sale" },
+                  { label: "TOTAL SALES", path: "/sales/total" },
+                  { label: "CLIENT LEDGER", path: "/sales/ledger" },
+                ]}
+                onSelect={() => setDropdown(null)}
+              />
+            )}
+          </li>
 
           <li className="logout" onClick={() => navigate("/logout")}>
             LOGOUT
@@ -111,8 +129,11 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="nav-right">
-        <div className="user">👤 Ahmad</div>
-        <div className="name-badge">Muhammad Ahmad Gill</div>
+        {/* Show user name if available */}
+        <div className="user">
+          {user ? `👤 ${user.username}` : "👤 Loading..."}
+        </div>
+        <div className="name-badge">{user ? user.email : "Loading..."}</div>
       </div>
     </header>
   );
