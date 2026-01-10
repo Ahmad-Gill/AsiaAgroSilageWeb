@@ -308,7 +308,7 @@ useEffect(() => {
 
 
   return (
-    <div className="expenses-container">
+    <div className="bunker-details-container">
       <h1>Category Management</h1>
 
       {/* Form to add Category */}
@@ -324,8 +324,9 @@ useEffect(() => {
       </form>
 
       {/* Category Table */}
+      <div className="table-wrapper">
       <h2>Categories</h2>
-      <table className="category-table">
+      <table className="modern-table">
         <thead>
           <tr>
             <th>Category Name</th>
@@ -337,7 +338,7 @@ useEffect(() => {
             <tr key={category._id}>
               <td>{category.name}</td>
               <td>
-                <button onClick={() => handleDeleteCategory(category._id)}>
+                <button className="btn-delete" onClick={() => handleDeleteCategory(category._id)}>
                   Delete
                 </button>
               </td>
@@ -345,6 +346,7 @@ useEffect(() => {
           ))}
         </tbody>
       </table>
+      </div>
 
       <h1>Expense Management</h1>
 
@@ -410,8 +412,9 @@ useEffect(() => {
 
 {summary && (
   <>
+  <div className="table-wrapper">
     <h2>Expense Summary</h2>
-    <table className="summary-table">
+    <table className="modern-table">
       <thead>
         <tr>
           <th>Total Spent</th>
@@ -429,6 +432,7 @@ useEffect(() => {
         </tr>
       </tbody>
     </table>
+    </div>
   </>
 )}
 
@@ -480,8 +484,9 @@ useEffect(() => {
 </div>
 
       {/* Expense Table */}
+      <div className="table-wrapper">
       <h2>Expenses</h2>
-      <table className="expense-table">
+      <table className="modern-table">
         <thead>
           <tr>
             <th>Created By</th>
@@ -509,10 +514,10 @@ useEffect(() => {
 
               <td>{new Date(expense.date || expense.createdAt).toLocaleString()}</td>
               <td>
-                <button onClick={() => handleEditExpense(expense)}>
+                <button className="btn-edit" onClick={() => handleEditExpense(expense)}>
                   Update
                 </button>
-                <button onClick={() => handleDeleteExpense(expense._id)}>
+                <button className="btn-delete" onClick={() => handleDeleteExpense(expense._id)}>
                   Delete
                 </button>
               </td>
@@ -520,6 +525,7 @@ useEffect(() => {
           ))}
         </tbody>
       </table>
+      </div>
 
       {/* PopupAlert to show success or error messages */}
       <PopupAlert

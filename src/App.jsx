@@ -11,6 +11,7 @@ import BUnker from "./pages/bunker/bunker";
 import SpareParts from "./pages/spareParts/spareParts";
 import Expenses from "./pages/epences/expenses";
 import SalePage from "./pages/sale/sale";
+import TotalSales from "./pages/sale/TotalSales";
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/spare-parts" element={<SpareParts />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/sale" element={<SalePage />} />
+        <Route path="/total-sales" element={<TotalSales />} />
           <Route path="/bunkerdetails/:id" element={<BunkerDetails />} />
       </Route>
 

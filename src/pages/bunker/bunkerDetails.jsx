@@ -534,9 +534,9 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
       {/* Silage Summary */}
       {summaryData && summaryData.bunkerAddSilagesSummary && (
-        <div className="summary-section">
+        <div className="table-wrapper">
           <h3>Silage Summary</h3>
-          <table className="summary-table">
+          <table className="modern-table">
             <tbody>
               <tr>
                 <td>Total Kgs Bought</td>
@@ -565,9 +565,9 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
       {/* Expense Summary */}
       {summaryData && summaryData.bunkerExpensesSummary && (
-        <div className="summary-section">
+        <div className="table-wrapper">
           <h3>Expense Summary</h3>
-          <table className="summary-table">
+          <table className="modern-table">
             <tbody>
               <tr>
                 <td>Total Expense Amount</td>
@@ -588,9 +588,10 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
       {/* Sales Summary */}
       {summaryData && summaryData.bunkerSalesSummary && (
-        <div className="summary-section">
+        <div className="table-wrapper">
           <h3>Sales Summary</h3>
-          <table className="summary-table">
+          <table className="modern-table">
+
             <tbody>
               <tr>
                 <td>Total Amount Remaining to Recover</td>
@@ -615,9 +616,9 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
       {/* Available Stock */}
       {summaryData && (
-        <div className="summary-section">
+        <div className="table-wrapper">
           <h3>Available Stock</h3>
-          <table className="summary-table">
+          <table className="modern-table">
             <tbody>
               <tr>
                 <td>Available Stock</td>
@@ -722,7 +723,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
               buys.map(b => {
                 const grossAmount = b.quantity * b.price;
                 const paid = Number(b.amountPaid) || 0;
-                const remainingAmount = Math.max(b.totalAmount - paid, 0);
+                const remainingAmount =b.totalAmount - paid;
 
                 return (
                   <tr
@@ -770,6 +771,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
               <th>Client</th>
               <th>KG</th>
               <th>Price</th>
+              <th>Discount</th>
               <th>Net</th>
               <th>Paid</th>
               <th>Remaining</th>
@@ -786,7 +788,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
             ) : (
               sales.map(s => {
                 const paid = Number(s.amountPaid) || 0;
-                const remainingAmount = Math.max(s.totalAmount - paid, 0);
+                const remainingAmount =s.totalAmount - paid;
 
                 return (
                   <tr
@@ -796,6 +798,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                     <td className={remainingAmount > 0 ? "pending-cell" : ""}>{s.customerName}</td>
                     <td>{s.kgsSold}</td>
                     <td>{s.price.toFixed(2)}</td>
+                    <td>{(s.discount || 0).toFixed(2)}</td>
                     <td>{s.totalAmount.toFixed(2)}</td>
                     <td>{paid.toFixed(2)}</td>
                     <td>{remainingAmount.toFixed(2)}</td>

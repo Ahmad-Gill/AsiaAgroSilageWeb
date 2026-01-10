@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { jsPDF } from 'jspdf'; // For PDF generation
 import "jspdf-autotable"; // Ensure you import the jsPDF autoTable plugin
-
+import PopupAlert from "../../components/popupAlert/PopupAlert"; // Import PopupAlert component
 import './sale.css'; // Import the CSS file here
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -12,12 +12,13 @@ const ADMIN_ACCESS_TOKEN =
 const SalePage = () => {
     const [billNumber, setBillNumber] = useState('');
     const [formData, setFormData] = useState({
+        billNo: billNumber,
         clientName: '',
         phoneNumber: '',
         description: '',
-        purchaseCategory: '',
+        purchaseCategory: 'silage',
         noOfBales: 0,
-        weightInKg: 0,
+        weightinKgs: 0,
         pricePerKg: 0,
         discount: 0,
         amountPaid: 0,
@@ -28,6 +29,12 @@ const SalePage = () => {
         transportationCost: 0,
         totalAmount: 0,
         remainingAmount: 0,
+    });
+    const [popup, setPopup] = useState({
+        open: false,
+        message: "",
+        status: 200,
+        loading: false,
     });
 
     const pdfPreviewRef = useRef(null); // Reference to iframe for preview
@@ -56,7 +63,7 @@ const SalePage = () => {
     };
 
     const calculateAmounts = () => {
-        const totalAmount = formData.noOfBales * formData.weightInKg * formData.pricePerKg - (formData.discount / 100) * (formData.noOfBales * formData.weightInKg * formData.pricePerKg);
+        const totalAmount = formData.weightinKgs * formData.pricePerKg - (formData.discount);
         const remainingAmount = totalAmount - formData.amountPaid;
         setFormData({
             ...formData,
@@ -67,7 +74,7 @@ const SalePage = () => {
 
     useEffect(() => {
         calculateAmounts(); // Recalculate on field change
-    }, [formData.noOfBales, formData.weightInKg, formData.pricePerKg, formData.discount, formData.amountPaid]);
+    }, [formData.noOfBales, formData.weightinKgs, formData.pricePerKg, formData.discount, formData.amountPaid]);
 
     const generatePDF = () => {
         const doc = new jsPDF();
@@ -139,9 +146,9 @@ const SalePage = () => {
             doc.setFontSize(12);
             doc.setFont('times', 'normal');
             doc.setTextColor(...sectionTextColor); // Black text for content
-            doc.text('Purchase Category: ' + formData.purchaseCategory, 10, 130);
+            doc.text('Purchase Category: SILAGE', 10, 130);
             doc.text('Number of Bales: ' + formData.noOfBales, 10, 140);
-            doc.text('Weight in Kg: ' + formData.weightInKg, 10, 150);
+            doc.text('Weight in Kg: ' + formData.weightinKgs, 10, 150);
             doc.text('Price per Kg: ' + formData.pricePerKg, 10, 160);
             doc.text('Discount (%): ' + formData.discount, 10, 170);
 
@@ -204,7 +211,7 @@ const SalePage = () => {
 
         // Function to add the "PAID" stamp
         const addPaidStamp = () => {
-            if (formData.remainingAmount>0) {
+            if (formData.remainingAmount > 0) {
 
                 console.log('Total and Paid Amounts are equal. Adding PAID stamp.');
                 const stampWidth = 80;
@@ -218,7 +225,7 @@ const SalePage = () => {
                 }
             }
             else {
-             const stampWidth = 80;
+                const stampWidth = 80;
                 const stampHeight = 0;
 
                 const imagePath = '/stamp_paid.png';
@@ -248,23 +255,50 @@ const SalePage = () => {
         if (pdfPreviewRef.current) {
             pdfPreviewRef.current.src = pdfPreviewUrl; // Update iframe source with the generated PDF
         }
+        return doc
     };
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Submit the data via POST API
-        axios.post(`${API_BASE_URL}admin/sale`, formData, {
-            headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
-        })
-            .then(response => {
-                // After submission, save the final PDF
-                const doc = new jsPDF();
-                doc.save(`Bill${billNumber}_${formData.clientName}.pdf`);
-            })
-            .catch(error => console.error('Error submitting sale data', error));
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}admin/sale`,
+                {
+                    ...formData,
+                    billNo: billNumber,
+                    purchasedItems: 'silage',
+                },
+                {
+                    headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
+                }
+            );
+
+            setPopup({
+                open: true,
+                message: response.data?.message || "Sale created successfully!",
+                status: response.status,
+                loading: false,
+            });
+
+            const doc = generatePDF(); // SAME PDF AS PREVIEW
+            doc.save(`Bill${billNumber}_${formData.clientName}.pdf`);
+
+        } catch (error) {
+            console.error("Error submitting sale data", error);
+
+            setPopup({
+                open: true,
+                message: error.response?.data?.message || "Something went wrong",
+                status: error.response?.status || 500,
+                loading: false,
+            });
+        } finally {
+
+        }
     };
+
 
     return (
         <div className="sale-page">
@@ -287,15 +321,21 @@ const SalePage = () => {
                 </div>
                 <div>
                     <label>Purchase Category</label>
-                    <input type="text" name="purchaseCategory" value={formData.purchaseCategory} onChange={handleChange} />
+                    <input
+                        type="text"
+                        name="purchaseCategory"
+                        value="Silage"
+                        disabled
+                    />
                 </div>
+
                 <div>
                     <label>Number of Bales</label>
                     <input type="number" name="noOfBales" value={formData.noOfBales} onChange={handleChange} />
                 </div>
                 <div>
                     <label>Weight in Kg</label>
-                    <input type="number" name="weightInKg" value={formData.weightInKg} onChange={handleChange} />
+                    <input type="number" name="weightinKgs" value={formData.weightinKgs} onChange={handleChange} />
                 </div>
                 <div>
                     <label>Price per Kg</label>
@@ -350,6 +390,13 @@ const SalePage = () => {
                     title="PDF Preview"
                 />
             </div>
+            <PopupAlert
+                open={popup.open}
+                message={popup.message}
+                status={popup.status}
+                loading={popup.loading}
+                onClose={() => setPopup({ ...popup, open: false })}
+            />
         </div>
     );
 };

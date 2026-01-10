@@ -50,8 +50,17 @@ function Navbar() {
       {/* LEFT */}
       <div className="nav-left">
         <div className="logo" onClick={() => navigate("/")}>
-          <strong>AAS</strong>
-          <span>Asia Agro Silage</span>
+<div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+  <img
+    src="vite.svg"
+    alt="AAS Logo"
+    style={{  width: 32,
+    height: 32,
+    borderRadius: "50%",
+    objectFit: "cover", }}
+  />
+</div>
+
         </div>
 
         <ul className="nav-links">
@@ -113,7 +122,7 @@ function Navbar() {
               <NavbarMenu
                 items={[
                   { label: "SALES", path: "/sale" },
-                  { label: "TOTAL SALES", path: "/sales/total" },
+                  { label: "TOTAL SALES", path: "/total-sales" },
                   { label: "CLIENT LEDGER", path: "/sales/ledger" },
                 ]}
                 onSelect={() => setDropdown(null)}

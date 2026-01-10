@@ -8,13 +8,31 @@ function TotalStock() {
   const [stocks, setStocks] = useState([]);
   const [stockOuts, setStockOuts] = useState([]); // State to hold stock-out data
   const [loading, setLoading] = useState(true);
-const [filters, setFilters] = useState({
-  keyword: "",
-  date: "",
-  paymentStatus: "all", // paid | unpaid | all
-  limit: 10,
-});
+  const [filters, setFilters] = useState({
+    keyword: "",
+    date: "",
+    paymentStatus: "all", // paid | unpaid | all
+    limit: 10,
+  });
+const [stockSummary, setStockSummary] = useState([]);
 
+// ================= FETCH STOCK SUMMARY =================
+const fetchStockSummary = async () => {
+  if (!token) return;
+
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}admin/stock-summary`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    setStockSummary(res.data.data || []);
+  } catch (err) {
+    console.error("Error fetching stock summary", err);
+  }
+};
 
   const [stockOutFilters, setStockOutFilters] = useState({
     keyword: "",
@@ -41,14 +59,14 @@ const [filters, setFilters] = useState({
     try {
       setLoading(true);
 
-const params = {
-  limit: filters.limit,
-  ...(filters.keyword && { keyword: filters.keyword }),
-  ...(filters.date && { date: filters.date }),
-  ...(filters.paymentStatus !== "all" && {
-    paymentStatus: filters.paymentStatus,
-  }),
-};
+      const params = {
+        limit: filters.limit,
+        ...(filters.keyword && { keyword: filters.keyword }),
+        ...(filters.date && { date: filters.date }),
+        ...(filters.paymentStatus !== "all" && {
+          paymentStatus: filters.paymentStatus,
+        }),
+      };
 
 
       const res = await axios.get(
@@ -99,6 +117,7 @@ const params = {
   useEffect(() => {
     fetchStocks();
     fetchStockOut(); // Fetch stock-out data on initial load
+    fetchStockSummary(); // Fetch stock summary on initial load
   }, [filters, stockOutFilters]);
 
   // ================= DELETE STOCK =================
@@ -199,6 +218,63 @@ const params = {
 
   return (
     <div className="total-stock-page">
+<h1>Stock Summary</h1>
+
+<div className="table-wrapper">
+  <table className="modern-table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Total KGs Bought</th>
+        <th>Stock Out</th>
+        <th>Remaining Stock</th>
+        <th>Gross Total</th>
+        <th>Discount</th>
+        <th>Net Total</th>
+        <th>Paid</th>
+        <th>Remaining Amount</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {stockSummary.length === 0 ? (
+        <tr>
+          <td colSpan="9" className="empty">
+            No summary data found
+          </td>
+        </tr>
+      ) : (
+        stockSummary.map((item) => (
+          <tr key={item._id}>
+            <td>{item.category}</td>
+            <td>{Number(item.totalKgsBought).toFixed(2)}</td>
+            <td>{item.stockOutQuantity || 0}</td>
+            <td>{Number(item.remainingStock).toFixed(2)}</td>
+            <td>{Number(item.totalGrossTotal).toFixed(2)}</td>
+            <td>{Number(item.totalDiscount).toFixed(2)}</td>
+            <td>{Number(item.totalNetTotal).toFixed(2)}</td>
+            <td>{Number(item.totalAmountPaid).toFixed(2)}</td>
+            <td
+              className={
+                Number(item.totalRemainingAmount) > 0
+                  ? "pending"
+                  : "paid"
+              }
+            >
+              {Number(item.totalRemainingAmount).toFixed(2)}
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
+
+
+
+
+
       <h1>Stock In</h1>
 
       {/* ========== Filters for Stock In ========== */}
@@ -215,15 +291,15 @@ const params = {
           onChange={(e) => setFilters({ ...filters, date: e.target.value })}
         />
         <select
-  value={filters.paymentStatus}
-  onChange={(e) =>
-    setFilters({ ...filters, paymentStatus: e.target.value })
-  }
->
-  <option value="all">All</option>
-  <option value="paid">Paid</option>
-  <option value="unpaid">Unpaid</option>
-</select>
+          value={filters.paymentStatus}
+          onChange={(e) =>
+            setFilters({ ...filters, paymentStatus: e.target.value })
+          }
+        >
+          <option value="all">All</option>
+          <option value="paid">Paid</option>
+          <option value="unpaid">Unpaid</option>
+        </select>
 
 
         <input
@@ -243,7 +319,7 @@ const params = {
       </div>
 
       {/* ========== Stock In Table ========== */}
-      <div className="table-container">
+      <div className="table-wrapper">
         {loading && (
           <div className="table-loader">
             <div className="spinner"></div>
@@ -251,7 +327,7 @@ const params = {
           </div>
         )}
 
-        <table className="universal-table">
+        <table className="modern-table">
           <thead>
             <tr>
               <th>Client</th>
@@ -295,7 +371,7 @@ const params = {
 
                   <td className="actions">
                     <button
-                      className="edit-btn"
+                       className="btn-edit"
                       onClick={() => {
                         setSelectedStock(stock);
                         setShowEdit(true);
@@ -305,7 +381,7 @@ const params = {
                     </button>
 
                     <button
-                      className="delete-btn"
+                      className="btn-delete"
                       onClick={() => handleDeleteStockIn(stock._id)}
                     >
                       Delete
@@ -356,8 +432,8 @@ const params = {
       </div>
 
       {/* ========== Stock Out Table ========== */}
-      <div className="stock-out-container">
-        <table className="universal-table">
+      <div className="table-wrapper">
+        <table className="modern-table">
           <thead>
             <tr>
               <th>Person Name</th>
@@ -386,7 +462,7 @@ const params = {
                   <td>{new Date(stockOut.date).toLocaleDateString()}</td>
                   <td className="actions">
                     <button
-                      className="delete-btn"
+                      className="btn-delete"
                       onClick={() => handleDeleteStockOut(stockOut._id)}
                     >
                       Delete
