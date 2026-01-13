@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios"; // Import axios for making API requests
 import "./navbar.css";
 import NavbarMenu from "./NavbarMenu";
+import AASLogo from '../../../public/AAS.jpeg';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ADMIN_ACCESS_TOKEN =
@@ -50,23 +51,25 @@ function Navbar() {
       {/* LEFT */}
       <div className="nav-left">
         <div className="logo" onClick={() => navigate("/")}>
-<div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-  <img
-    src="vite.svg"
-    alt="AAS Logo"
-    style={{  width: 32,
-    height: 32,
-    borderRadius: "50%",
-    objectFit: "cover", }}
-  />
-</div>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <img
+              src={AASLogo}
+              alt="AAS Logo"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+          </div>
 
         </div>
 
         <ul className="nav-links">
           <li
             className={active === "HOME" ? "active" : ""}
-            onClick={() => handleNavClick("HOME", "/")}
+            onClick={() => handleNavClick("HOME", "/home")}
           >
             HOME
           </li>
@@ -123,14 +126,14 @@ function Navbar() {
                 items={[
                   { label: "SALES", path: "/sale" },
                   { label: "TOTAL SALES", path: "/total-sales" },
-                  { label: "CLIENT LEDGER", path: "/sales/ledger" },
+                  { label: "CLIENT LEDGER", path: "/client-ledger" },
                 ]}
                 onSelect={() => setDropdown(null)}
               />
             )}
           </li>
 
-          <li className="logout" onClick={() => navigate("/logout")}>
+          <li className="logout" onClick={() => navigate("/")}>
             LOGOUT
           </li>
         </ul>

@@ -65,7 +65,7 @@ const handleSubmit = async (e) => {
       JSON.stringify(data.data.basicInfo)
     );
 
-    navigate("/stock/in");
+    navigate("/home");
   } catch (err) {
     setError(err.message);
   } finally {

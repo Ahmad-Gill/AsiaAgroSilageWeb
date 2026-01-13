@@ -12,6 +12,8 @@ import SpareParts from "./pages/spareParts/spareParts";
 import Expenses from "./pages/epences/expenses";
 import SalePage from "./pages/sale/sale";
 import TotalSales from "./pages/sale/TotalSales";
+import Home from "./pages/dashboard/Home";
+import ClientLedger from "./pages/clientLedger/clientLedgerPage";
 
 
 function App() {
@@ -28,8 +30,10 @@ function App() {
         <Route path="/stock/in" element={<StockIn />} />
         <Route path="/stock/out" element={<StockOut />} />
         <Route path="/stock" element={<TotalStock />} />
+        <Route path="/client-ledger" element={<ClientLedger />} />
        <Route path="/bunker" element={<BUnker />} />
         <Route path="/spare-parts" element={<SpareParts />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/sale" element={<SalePage />} />
         <Route path="/total-sales" element={<TotalSales />} />
