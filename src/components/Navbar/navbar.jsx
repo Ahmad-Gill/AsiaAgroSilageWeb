@@ -4,6 +4,7 @@ import axios from "axios"; // Import axios for making API requests
 import "./navbar.css";
 import NavbarMenu from "./NavbarMenu";
 import AASLogo from '../../../public/AAS.jpeg';
+import { useRef } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ADMIN_ACCESS_TOKEN =
@@ -13,12 +14,25 @@ const ADMIN_ACCESS_TOKEN =
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dropdownRef = useRef(null);
+
 
   const [active, setActive] = useState("HOME");
   const [dropdown, setDropdown] = useState(null);
   const [user, setUser] = useState(null); // State to store the user data
 
   // Fetch user data
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -97,11 +111,18 @@ function Navbar() {
 
           {/* STOCK */}
           <li
+            ref={dropdownRef}
             className={`dropdown-wrapper ${active === "STOCK" ? "active" : ""}`}
-            onMouseEnter={() => setDropdown("STOCK")}
-            onMouseLeave={() => setDropdown(null)}
           >
-            <span className="dropdown-trigger">STOCK ▾</span>
+            <span
+              className="dropdown-trigger"
+              onClick={() =>
+                setDropdown(dropdown === "STOCK" ? null : "STOCK")
+              }
+            >
+              STOCK ▾
+            </span>
+
             {dropdown === "STOCK" && (
               <NavbarMenu
                 items={[
@@ -114,13 +135,21 @@ function Navbar() {
             )}
           </li>
 
+
           {/* SALES */}
           <li
+            ref={dropdownRef}
             className={`dropdown-wrapper ${active === "SALES" ? "active" : ""}`}
-            onMouseEnter={() => setDropdown("SALES")}
-            onMouseLeave={() => setDropdown(null)}
           >
-            <span className="dropdown-trigger">SALES ▾</span>
+            <span
+              className="dropdown-trigger"
+              onClick={() =>
+                setDropdown(dropdown === "SALES" ? null : "SALES")
+              }
+            >
+              SALES ▾
+            </span>
+
             {dropdown === "SALES" && (
               <NavbarMenu
                 items={[
@@ -132,6 +161,7 @@ function Navbar() {
               />
             )}
           </li>
+
 
           <li className="logout" onClick={() => navigate("/")}>
             LOGOUT
