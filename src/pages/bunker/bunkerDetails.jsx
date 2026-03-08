@@ -319,11 +319,13 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
       <div className="filter-bar">
         <input placeholder="Search keyword" value={keyword} onChange={e => setKeyword(e.target.value)} />
         <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-        <select value={limit} onChange={e => setLimit(e.target.value)}>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
+<input
+  type="number"
+  min={1}
+  max={100}
+  value={limit}
+  onChange={(e) => setLimit(Number(e.target.value) || 1)}
+/>
         <select value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)}>
           <option value="">All</option>
           <option value="paid">Paid</option>

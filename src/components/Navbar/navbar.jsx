@@ -1,30 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios"; // Import axios for making API requests
+import axios from "axios";
 import "./navbar.css";
 import NavbarMenu from "./NavbarMenu";
-import AASLogo from '../../../public/AAS.jpeg';
-import { useRef } from "react";
+import AASLogo from "../../../public/AAS.jpeg";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const ADMIN_ACCESS_TOKEN =
   localStorage.getItem("adminToken") || import.meta.env.VITE_ADMIN_ACCESS_TOKEN;
-
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const dropdownRef = useRef(null);
 
+  // separate refs
+  const stockDropdownRef = useRef(null);
+  const salesDropdownRef = useRef(null);
 
   const [active, setActive] = useState("HOME");
   const [dropdown, setDropdown] = useState(null);
-  const [user, setUser] = useState(null); // State to store the user data
+  const [user, setUser] = useState(null);
 
-  // Fetch user data
+  /*
+  ========================
+  CLICK OUTSIDE HANDLER
+  ========================
+  */
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        stockDropdownRef.current &&
+        !stockDropdownRef.current.contains(event.target) &&
+        salesDropdownRef.current &&
+        !salesDropdownRef.current.contains(event.target)
+      ) {
         setDropdown(null);
       }
     };
@@ -33,51 +43,80 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  /*
+  ========================
+  FETCH USER
+  ========================
+  */
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}admin/user`, {
           headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
         });
-        setUser(response.data.data[0]); // Assuming the response has a 'data' field
+
+        setUser(response.data.data[0]);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
 
-    fetchUserData(); // Fetch user data when the component mounts
+    fetchUserData();
   }, []);
 
-  // Sync active menu with URL
+  /*
+  ========================
+  ACTIVE MENU DETECTION
+  ========================
+  */
   useEffect(() => {
-    if (location.pathname.startsWith("/stock")) setActive("STOCK");
-    else if (location.pathname.startsWith("/sales")) setActive("SALES");
-    else if (location.pathname === "/") setActive("HOME");
+    const path = location.pathname;
+
+    if (path.startsWith("/stock")) setActive("STOCK");
+    else if (path.startsWith("/sale") || path.startsWith("/total-sales"))
+      setActive("SALES");
+    else if (path.startsWith("/bunker")) setActive("BUNKER");
+    else if (path.startsWith("/expenses")) setActive("EXPENSES");
+    else if (path.startsWith("/spare-parts")) setActive("SPARE PARTS");
+    else if (path.startsWith("/home")) setActive("HOME");
   }, [location.pathname]);
 
+  /*
+  ========================
+  NAVIGATION
+  ========================
+  */
   const handleNavClick = (item, path) => {
     setActive(item);
     navigate(path);
+    setDropdown(null);
+  };
+
+  /*
+  ========================
+  LOGOUT
+  ========================
+  */
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    navigate("/");
   };
 
   return (
     <header className="navbar">
-      {/* LEFT */}
+      {/* LEFT SIDE */}
       <div className="nav-left">
-        <div className="logo" onClick={() => navigate("/")}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <img
-              src={AASLogo}
-              alt="AAS Logo"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-
+        <div className="logo" onClick={() => navigate("/home")}>
+          <img
+            src={AASLogo}
+            alt="AAS Logo"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+          />
         </div>
 
         <ul className="nav-links">
@@ -109,9 +148,9 @@ function Navbar() {
             SPARE PARTS
           </li>
 
-          {/* STOCK */}
+          {/* STOCK DROPDOWN */}
           <li
-            ref={dropdownRef}
+            ref={stockDropdownRef}
             className={`dropdown-wrapper ${active === "STOCK" ? "active" : ""}`}
           >
             <span
@@ -130,15 +169,14 @@ function Navbar() {
                   { label: "STOCK IN", path: "/stock/in" },
                   { label: "STOCK OUT", path: "/stock/out" },
                 ]}
-                onSelect={() => setDropdown(null)}
+                onSelect={(path) => handleNavClick("STOCK", path)}
               />
             )}
           </li>
 
-
-          {/* SALES */}
+          {/* SALES DROPDOWN */}
           <li
-            ref={dropdownRef}
+            ref={salesDropdownRef}
             className={`dropdown-wrapper ${active === "SALES" ? "active" : ""}`}
           >
             <span
@@ -157,25 +195,26 @@ function Navbar() {
                   { label: "TOTAL SALES", path: "/total-sales" },
                   { label: "CLIENT LEDGER", path: "/client-ledger" },
                 ]}
-                onSelect={() => setDropdown(null)}
+                onSelect={(path) => handleNavClick("SALES", path)}
               />
             )}
           </li>
 
-
-          <li className="logout" onClick={() => navigate("/")}>
+          <li className="logout" onClick={handleLogout}>
             LOGOUT
           </li>
         </ul>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT SIDE */}
       <div className="nav-right">
-        {/* Show user name if available */}
         <div className="user">
           {user ? `👤 ${user.username}` : "👤 Loading..."}
         </div>
-        <div className="name-badge">{user ? user.email : "Loading..."}</div>
+
+        <div className="name-badge">
+          {user ? user.email : "Loading..."}
+        </div>
       </div>
     </header>
   );
