@@ -21,17 +21,19 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const ADMIN_ACCESS_TOKEN = localStorage.getItem("adminToken") || import.meta.env.VITE_ADMIN_ACCESS_TOKEN;
+const ADMIN_ACCESS_TOKEN =
+  localStorage.getItem("adminToken") || import.meta.env.VITE_ADMIN_ACCESS_TOKEN;
 
 const Home = () => {
   const [stockSummary, setStockSummary] = useState([]);
   const [salesSummary, setSalesSummary] = useState({});
   const [buyingSummary, setBuyingSummary] = useState([]);
   const [expenseSummary, setExpenseSummary] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchStockSummary();
@@ -42,11 +44,14 @@ const Home = () => {
 
   const fetchStockSummary = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${API_BASE_URL}admin/available-stock`, {
         headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
       });
       setStockSummary(response.data.data);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching stock summary:", error);
     }
   };
@@ -75,9 +80,12 @@ const Home = () => {
 
   const fetchExpenseSummary = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}admin/expences/summary`, {
-        headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}admin/expences/summary`,
+        {
+          headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
+        },
+      );
       setExpenseSummary(response.data.data);
     } catch (error) {
       console.error("Error fetching expense summary:", error);
@@ -86,13 +94,13 @@ const Home = () => {
 
   // Chart Data Preparation for Stock Summary (Bar Chart)
   const stockChartData = {
-    labels: stockSummary.map(item => item.category),
+    labels: stockSummary.map((item) => item.category),
     datasets: [
       {
-        label: 'Available Stock',
-        data: stockSummary.map(item => item.totalStockAvailable),
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        label: "Available Stock",
+        data: stockSummary.map((item) => item.totalStockAvailable),
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
     ],
@@ -100,10 +108,15 @@ const Home = () => {
 
   // Chart Data Preparation for Sales Summary (Line Chart)
   const salesChartData = {
-    labels: ['Total Kgs Sold', 'Total Discount', 'Total Received', 'Remaining Amount'],
+    labels: [
+      "Total Kgs Sold",
+      "Total Discount",
+      "Total Received",
+      "Remaining Amount",
+    ],
     datasets: [
       {
-        label: 'Sales Data',
+        label: "Sales Data",
         data: [
           salesSummary.totalKgsSold,
           salesSummary.totalDiscountGiven,
@@ -111,7 +124,7 @@ const Home = () => {
           salesSummary.totalAmountRemaining,
         ],
         fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
+        borderColor: "rgba(75, 192, 192, 1)",
         tension: 0.1,
       },
     ],
@@ -119,13 +132,13 @@ const Home = () => {
 
   // Chart Data Preparation for Buying Summary (Bar Chart)
   const buyingChartData = {
-    labels: buyingSummary.map(item => item.category),
+    labels: buyingSummary.map((item) => item.category),
     datasets: [
       {
-        label: 'Total Kgs Bought',
-        data: buyingSummary.map(item => item.totalKgsBought),
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        borderColor: 'rgba(153, 102, 255, 1)',
+        label: "Total Kgs Bought",
+        data: buyingSummary.map((item) => item.totalKgsBought),
+        backgroundColor: "rgba(153, 102, 255, 0.2)",
+        borderColor: "rgba(153, 102, 255, 1)",
         borderWidth: 1,
       },
     ],
@@ -133,17 +146,17 @@ const Home = () => {
 
   // Chart Data Preparation for Expense Summary (Bar Chart)
   const expenseChartData = {
-    labels: ['Total Spent', 'Total Discount', 'Total Remaining'],
+    labels: ["Total Spent", "Total Discount", "Total Remaining"],
     datasets: [
       {
-        label: 'Expense Breakdown',
+        label: "Expense Breakdown",
         data: [
           expenseSummary.totalAmountSpent,
           expenseSummary.totalDiscount,
           expenseSummary.totalRemainingAmount,
         ],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-        borderColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+        borderColor: ["#FF6384", "#36A2EB", "#FFCE56"],
         borderWidth: 1,
       },
     ],
@@ -151,11 +164,9 @@ const Home = () => {
 
   return (
     <div className="home-page">
-<div class="heading-container">
-  <h1>ASIA AGRO SILAGE</h1>
-</div>
-
-
+      <div class="heading-container">
+        <h1>ASIA AGRO SILAGE</h1>
+      </div>
 
       <div className="content-grid">
         {/* Stock Summary Section */}
@@ -184,6 +195,16 @@ const Home = () => {
 
         {/* Sales Summary Section */}
         <div className="section">
+          {loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
+            </div>
+          </div>
+        )}
           <h2>Sales Summary</h2>
           <div className="chart">
             <Line data={salesChartData} options={{ responsive: true }} />

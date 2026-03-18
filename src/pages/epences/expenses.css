@@ -45,7 +45,7 @@ h3 {
 }
 
 .category-form button {
-  background-color: #4CAF50;
+  background-color: #2196F3;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -56,7 +56,7 @@ h3 {
 }
 
 .category-form button:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
 }
 
 .category-form button:disabled {
@@ -120,7 +120,7 @@ h3 {
 }
 
 .expense-form button {
-  background-color: #4CAF50;
+  background-color: #2196F3;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -131,7 +131,7 @@ h3 {
 }
 
 .expense-form button:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
 }
 
 .expense-form button:disabled {
@@ -335,6 +335,90 @@ h3 {
 .popup-actions button:last-child:hover {
   background-color: #d32f2f;
 }
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.pagination-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+
+.pagination-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.page-info {
+  font-size: 16px;
+  color: #555;
+  font-weight: normal;
+}
+
+.pagination-info strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.pagination-btn.previous {
+  background-color: #007bff;
+}
+
+.pagination-btn.next {
+  background-color: #007bff;
+}
+
+.pagination-btn.previous:hover:not(:disabled),
+.pagination-btn.next:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .pagination-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination-info {
+    margin: 10px 0;
+  }
+}
 
 
+.filters {
+  display: flex;
+  align-items: center; /* Align items vertically at the center */
+  gap: 10px; /* Adds space between elements */
+}
 
+.filters input,
+.filters select,
+.filters button {
+  padding: 8px 12px;
+  font-size: 14px;
+}

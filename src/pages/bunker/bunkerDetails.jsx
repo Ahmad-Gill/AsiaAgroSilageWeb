@@ -4,13 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./bunkerDetails.css";
 import PopupAlert from "../../components/popupAlert/PopupAlert";
 
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ADMIN_ACCESS_TOKEN =
   localStorage.getItem("adminToken") || import.meta.env.VITE_ADMIN_ACCESS_TOKEN;
-
-
-
 
 const BunkerDetails = () => {
   const { id } = useParams();
@@ -37,10 +33,8 @@ const BunkerDetails = () => {
   });
 
   const sellTotal = Math.max(
-    Number(
-      (sellCalc.qty * sellCalc.price - sellCalc.discount).toFixed(2)
-    ),
-    0
+    Number((sellCalc.qty * sellCalc.price - sellCalc.discount).toFixed(2)),
+    0,
   );
   const [buyCalc, setBuyCalc] = useState({
     qty: 0,
@@ -49,137 +43,186 @@ const BunkerDetails = () => {
   });
 
   const buyTotal = Math.max(
-    Number(
-      (buyCalc.qty * buyCalc.price - buyCalc.discount).toFixed(2)
-    ),
-    0
+    Number((buyCalc.qty * buyCalc.price - buyCalc.discount).toFixed(2)),
+    0,
   );
   const updateBuyPaid = async () => {
     if (!editingBuy) return;
-    setPopup({ open: true, message: "Updating...", status: 200, loading: true });
+    setPopup({
+      open: true,
+      message: "Updating...",
+      status: 200,
+      loading: true,
+    });
 
     try {
       const res = await axios.put(
         `${API_BASE_URL}admin/bunker-add-silage/${editingBuy._id}`,
         { amountPaid: editPaid },
-        { headers }
+        { headers },
       );
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
       setEditingBuy(null);
       fetchAll();
     } catch (err) {
       setPopup({
-      open: true,
-      message: err.response?.data?.message || "Delete failed",
-      status: err.response?.status || 500,
-      loading: false,
-    });
+        open: true,
+        message: err.response?.data?.message || "Delete failed",
+        status: err.response?.status || 500,
+        loading: false,
+      });
       console.error("Update buy failed", err);
     }
   };
   useEffect(() => {
-  const fetchBunkerSummary = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}admin/bunker-summary`, {
-        params: { bunker: id },
-        headers: {
-          Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setSummaryData(response.data.data); // store the fetched data
-    } catch (error) {
-      console.error("Failed to fetch bunker summary:", error);
-    }
-  };
+    const fetchBunkerSummary = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}admin/bunker-summary`,
+          {
+            params: { bunker: id },
+            headers: {
+              Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        setSummaryData(response.data.data); // store the fetched data
+      } catch (error) {
+        console.error("Failed to fetch bunker summary:", error);
+      }
+    };
 
-  fetchBunkerSummary();
-}, [id]);
-const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
+    fetchBunkerSummary();
+  }, [id]);
+  const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
   const deleteBuy = async (id) => {
     if (!window.confirm("Delete this purchase?")) return;
-    setPopup({ open: true, message: "Updating...", status: 200, loading: true });
+    setPopup({
+      open: true,
+      message: "Updating...",
+      status: 200,
+      loading: true,
+    });
 
     try {
-     const res= await axios.delete(
+      const res = await axios.delete(
         `${API_BASE_URL}admin/bunker-add-silage/${id}`,
-        { headers }
+        { headers },
       );
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
       fetchAll();
     } catch (err) {
       setPopup({
-      open: true,
-      message: err.response?.data?.message || "Delete failed",
-      status: err.response?.status || 500,
-      loading: false,
-    });
+        open: true,
+        message: err.response?.data?.message || "Delete failed",
+        status: err.response?.status || 500,
+        loading: false,
+      });
       console.error("Delete buy failed", err);
     }
   };
   const updateSalePaid = async () => {
     if (!editingSale) return;
-    setPopup({ open: true, message: "Updating...", status: 200, loading: true });
+    setPopup({
+      open: true,
+      message: "Updating...",
+      status: 200,
+      loading: true,
+    });
 
     try {
       const res = await axios.put(
         `${API_BASE_URL}admin/bunker-sale/${editingSale._id}`,
         { amountPaid: editPaid },
-        { headers }
+        { headers },
       );
 
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
 
       setEditingSale(null);
       fetchAll();
     } catch (err) {
       setPopup({
-      open: true,
-      message: err.response?.data?.message || "Delete failed",
-      status: err.response?.status || 500,
-      loading: false,
-    });
+        open: true,
+        message: err.response?.data?.message || "Delete failed",
+        status: err.response?.status || 500,
+        loading: false,
+      });
       console.error("Update sale failed", err);
     }
   };
 
   const deleteSale = async (id) => {
     if (!window.confirm("Delete this sale?")) return;
-    setPopup({ open: true, message: "Updating...", status: 200, loading: true });
+    setPopup({
+      open: true,
+      message: "Updating...",
+      status: 200,
+      loading: true,
+    });
 
     try {
-      const res = await axios.delete(
-        `${API_BASE_URL}admin/bunker-sale/${id}`,
-        { headers }
-      );
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      const res = await axios.delete(`${API_BASE_URL}admin/bunker-sale/${id}`, {
+        headers,
+      });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
       fetchAll();
     } catch (err) {
       setPopup({
-      open: true,
-      message: err.response?.data?.message || "Delete failed",
-      status: err.response?.status || 500,
-      loading: false,
-    });
+        open: true,
+        message: err.response?.data?.message || "Delete failed",
+        status: err.response?.status || 500,
+        loading: false,
+      });
       console.error("Delete sale failed", err);
     }
   };
-
 
   const [editingExpense, setEditingExpense] = useState(null);
   const [editPaid, setEditPaid] = useState("");
   const updateExpensePaid = async () => {
     try {
-      setPopup({ open: true, message: "Updating...", status: 200, loading: true });
+      setPopup({
+        open: true,
+        message: "Updating...",
+        status: 200,
+        loading: true,
+      });
 
-     const res = await axios.put(
+      const res = await axios.put(
         `${API_BASE_URL}admin/bunker-expense/${editingExpense._id}`,
         { amountPaid: editPaid },
-        { headers }
+        { headers },
       );
 
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
       setEditingExpense(null);
       fetchAll();
     } catch (err) {
@@ -192,17 +235,28 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
     }
   };
   const deleteExpense = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this expense?")) return;
+    if (!window.confirm("Are you sure you want to delete this expense?"))
+      return;
 
     try {
-      setPopup({ open: true, message: "Deleting...", status: 200, loading: true });
+      setPopup({
+        open: true,
+        message: "Deleting...",
+        status: 200,
+        loading: true,
+      });
 
-     const res = await axios.delete(
+      const res = await axios.delete(
         `${API_BASE_URL}admin/bunker-expense/${id}`,
-        { headers }
+        { headers },
       );
 
-      setPopup({ open: true, message: res.data.message, status: res.status, loading: false });
+      setPopup({
+        open: true,
+        message: res.data.message,
+        status: res.status,
+        loading: false,
+      });
       fetchAll();
     } catch (err) {
       setPopup({
@@ -217,7 +271,20 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
   // filters
   const [keyword, setKeyword] = useState("");
   const [date, setDate] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [expencePage, setExpencePage] = useState(1);
+  const [expenceLimit, setExpenceLimit] = useState(10);
+  const [expenceTotalPages, setExpenceTotalPages] = useState(0);
+  const [expenceTotalRecords, setExpenceTotalRecords] = useState(0);
+
+  const [buyPage, setBuyPage] = useState(1);
+  const [buyLimit, setBuyLimit] = useState(10);
+  const [buyTotalPages, setBuyTotalPages] = useState(0);
+  const [buyTotalRecords, setBuyTotalRecords] = useState(0);
+
+  const [sellPage, setSellPage] = useState(1);
+  const [sellLimit, setSellLimit] = useState(10);
+  const [sellTotalPages, setSellTotalPages] = useState(0);
+  const [sellTotalRecords, setSellTotalRecords] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState("");
 
   const headers = useMemo(
@@ -225,16 +292,13 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
       Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     }),
-    []
+    [],
   );
 
   /* ================= HELPERS ================= */
-  const remaining = (total, paid) =>
-    Math.max(Number(total) - Number(paid), 0);
+  const remaining = (total, paid) => Math.max(Number(total) - Number(paid), 0);
 
   const gross = (qty, price) => Number(qty) * Number(price);
-
-
 
   /* ================= FETCH ================= */
   const fetchAll = async () => {
@@ -242,25 +306,56 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
     setLoading(true);
     try {
-      const params = {
+      // Params for each API call
+      const expenseParams = {
         bunker: id,
-        limit,
-        ...(keyword && { keyword }),
-        ...(date && { date }),
-        ...(paymentStatus && { paymentStatus }),
+        limit: expenceLimit, // Limit for expenses
+        page: expencePage, // Page for expenses
+      };
+
+      const buyParams = {
+        bunker: id,
+        limit: buyLimit, // Limit for buys
+        page: buyPage, // Page for buys
+      };
+
+      const saleParams = {
+        bunker: id,
+        limit: sellLimit, // Limit for sales
+        page: sellPage, // Page for sales
       };
 
       const [e, b, s] = await Promise.all([
-        axios.get(`${API_BASE_URL}admin/bunker-expense`, { headers, params }),
-        axios.get(`${API_BASE_URL}admin/bunker-add-silage`, { headers, params }),
-        axios.get(`${API_BASE_URL}admin/bunker-sale`, { headers, params }),
+        axios.get(`${API_BASE_URL}admin/bunker-expense`, {
+          headers,
+          params: expenseParams,
+        }), // Fetch expenses
+        axios.get(`${API_BASE_URL}admin/bunker-add-silage`, {
+          headers,
+          params: buyParams,
+        }), // Fetch buys
+        axios.get(`${API_BASE_URL}admin/bunker-sale`, {
+          headers,
+          params: saleParams,
+        }), // Fetch sales
       ]);
 
-
-
+      // Expenses data
       setExpenses(e.data.data || []);
+      setExpenceTotalPages(e.data.meta.totalPages);
+      setExpenceTotalRecords(e.data.meta.totalRecords);
+
+      // Buys data
       setBuys(b.data.data || []);
+      setBuyTotalPages(b.data.meta.totalPages);
+      setBuyTotalRecords(b.data.meta.totalRecords);
+
+      // Sales data
       setSales(s.data.data || []);
+      setSellTotalPages(s.data.meta.totalPages);
+      setSellTotalRecords(s.data.meta.totalRecords);
+    } catch (err) {
+      console.error("Error fetching data:", err);
     } finally {
       setLoading(false);
     }
@@ -268,7 +363,31 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
   useEffect(() => {
     fetchAll();
-  }, [id]);
+  }, [id, expencePage, buyPage, sellPage, expenceLimit, buyLimit, sellLimit]);
+
+  // Handle page change for expenses
+  const handleExpencePageChange = (direction) => {
+    setExpencePage((prevPage) => {
+      const newPage = direction === "next" ? prevPage + 1 : prevPage - 1;
+      return newPage;
+    });
+  };
+
+  // Handle page change for buys
+  const handleBuyPageChange = (direction) => {
+    setBuyPage((prevPage) => {
+      const newPage = direction === "next" ? prevPage + 1 : prevPage - 1;
+      return newPage;
+    });
+  };
+
+  // Handle page change for sales
+  const handleSellPageChange = (direction) => {
+    setSellPage((prevPage) => {
+      const newPage = direction === "next" ? prevPage + 1 : prevPage - 1;
+      return newPage;
+    });
+  };
 
   /* ================= SUBMIT ================= */
   const submit = async (e, url, payload) => {
@@ -314,19 +433,29 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
         onClose={() => setPopup({ ...popup, open: false })}
       />
 
-
       {/* ========== FILTER BAR ========== */}
       <div className="filter-bar">
-        <input placeholder="Search keyword" value={keyword} onChange={e => setKeyword(e.target.value)} />
-        <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-<input
-  type="number"
-  min={1}
-  max={100}
-  value={limit}
-  onChange={(e) => setLimit(Number(e.target.value) || 1)}
-/>
-        <select value={paymentStatus} onChange={e => setPaymentStatus(e.target.value)}>
+        <input
+          placeholder="Search keyword"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        {/* <input
+          type="number"
+          min={1}
+          max={100}
+          value={limit}
+          onChange={(e) => setLimit(Number(e.target.value) || 1)}
+        /> */}
+        <select
+          value={paymentStatus}
+          onChange={(e) => setPaymentStatus(e.target.value)}
+        >
           <option value="">All</option>
           <option value="paid">Paid</option>
           <option value="unpaid">Unpaid</option>
@@ -336,17 +465,24 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
 
       {/* ========== ADD FORMS ========== */}
       <div className="top-forms">
-
         {/* ADD EXPENSE */}
-        <FormCard title="Add Expense" onSubmit={(e) =>
-          submit(e, `${API_BASE_URL}admin/bunker-expense`, {
-            bunker: id,
-            name: e.target.name.value,
-            amount: e.target.amount.value,
-            amountPaid: e.target.amountPaid.value,
-          })
-        }>
-          <input name="name" placeholder="Expense name" loading={popup.loading} required />
+        <FormCard
+          title="Add Expense"
+          onSubmit={(e) =>
+            submit(e, `${API_BASE_URL}admin/bunker-expense`, {
+              bunker: id,
+              name: e.target.name.value,
+              amount: e.target.amount.value,
+              amountPaid: e.target.amountPaid.value,
+            })
+          }
+        >
+          <input
+            name="name"
+            placeholder="Expense name"
+            loading={popup.loading}
+            required
+          />
           <input name="amount" type="number" placeholder="Amount" required />
           <input name="amountPaid" type="number" placeholder="Paid" required />
         </FormCard>
@@ -417,11 +553,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           />
 
           {/* ✅ AUTO TOTAL (NOT EDITABLE) */}
-          <input
-            value={buyTotal.toFixed(2)}
-            disabled
-            className="auto-total"
-          />
+          <input value={buyTotal.toFixed(2)} disabled className="auto-total" />
 
           <input
             name="amountPaid"
@@ -433,7 +565,6 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
             required
           />
         </FormCard>
-
 
         {/* SELL SILAGE */}
         <FormCard
@@ -504,11 +635,7 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           />
 
           {/* ✅ AUTO TOTAL (2 DECIMALS) */}
-          <input
-            value={sellTotal.toFixed(2)}
-            disabled
-            className="auto-total"
-          />
+          <input value={sellTotal.toFixed(2)} disabled className="auto-total" />
 
           <input
             name="amountPaid"
@@ -520,124 +647,176 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
             required
           />
         </FormCard>
-
-
       </div>
 
+      <div className="bunker-details-container">
+        <PopupAlert
+          open={popup.open}
+          message={popup.message}
+          status={popup.status}
+          loading={popup.loading}
+          onClose={() => setPopup({ ...popup, open: false })}
+        />
 
-    <div className="bunker-details-container">
-      <PopupAlert
-        open={popup.open}
-        message={popup.message}
-        status={popup.status}
-        loading={popup.loading}
-        onClose={() => setPopup({ ...popup, open: false })}
-      />
+        {/* Silage Summary */}
+        {summaryData && summaryData.bunkerAddSilagesSummary && (
+          <div className="table-wrapper">
+            <h3>Silage Summary</h3>
+            <table className="modern-table">
+              <tbody>
+                <tr>
+                  <td>Total Kgs Bought</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerAddSilagesSummary.totalKgsBought,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Discount Taken</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerAddSilagesSummary.totalDiscountTaken,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Amount Spent</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerAddSilagesSummary.totalAmountSpent,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Amount Paid</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerAddSilagesSummary.totalAmountPaid,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Remaining Amount to Pay</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerAddSilagesSummary
+                        .totalRemainingAmountToPay,
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      {/* Silage Summary */}
-      {summaryData && summaryData.bunkerAddSilagesSummary && (
-        <div className="table-wrapper">
-          <h3>Silage Summary</h3>
-          <table className="modern-table">
-            <tbody>
-              <tr>
-                <td>Total Kgs Bought</td>
-                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalKgsBought)}</td>
-              </tr>
-              <tr>
-                <td>Total Discount Taken</td>
-                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalDiscountTaken)}</td>
-              </tr>
-              <tr>
-                <td>Total Amount Spent</td>
-                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalAmountSpent)}</td>
-              </tr>
-              <tr>
-                <td>Total Amount Paid</td>
-                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalAmountPaid)}</td>
-              </tr>
-              <tr>
-                <td>Total Remaining Amount to Pay</td>
-                <td>{formatValue(summaryData.bunkerAddSilagesSummary.totalRemainingAmountToPay)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+        {/* Expense Summary */}
+        {summaryData && summaryData.bunkerExpensesSummary && (
+          <div className="table-wrapper">
+            <h3>Expense Summary</h3>
+            <table className="modern-table">
+              <tbody>
+                <tr>
+                  <td>Total Expense Amount</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerExpensesSummary.totalExpenseAmount,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Amount Paid (Expenses)</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerExpensesSummary.totalAmountPaid,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Remaining Amount to Pay (Expenses)</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerExpensesSummary
+                        .totalRemainingAmountToPayForExpenses,
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      {/* Expense Summary */}
-      {summaryData && summaryData.bunkerExpensesSummary && (
-        <div className="table-wrapper">
-          <h3>Expense Summary</h3>
-          <table className="modern-table">
-            <tbody>
-              <tr>
-                <td>Total Expense Amount</td>
-                <td>{formatValue(summaryData.bunkerExpensesSummary.totalExpenseAmount)}</td>
-              </tr>
-              <tr>
-                <td>Total Amount Paid (Expenses)</td>
-                <td>{formatValue(summaryData.bunkerExpensesSummary.totalAmountPaid)}</td>
-              </tr>
-              <tr>
-                <td>Total Remaining Amount to Pay (Expenses)</td>
-                <td>{formatValue(summaryData.bunkerExpensesSummary.totalRemainingAmountToPayForExpenses)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+        {/* Sales Summary */}
+        {summaryData && summaryData.bunkerSalesSummary && (
+          <div className="table-wrapper">
+            <h3>Sales Summary</h3>
+            <table className="modern-table">
+              <tbody>
+                <tr>
+                  <td>Total Amount Remaining to Recover</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerSalesSummary
+                        .totalAmountRemainingToRecover,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Kgs Sold</td>
+                  <td>
+                    {formatValue(summaryData.bunkerSalesSummary.totalKgsSold)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Discount Given</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerSalesSummary.totalDiscountGiven,
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total Amount Paid (Sales)</td>
+                  <td>
+                    {formatValue(
+                      summaryData.bunkerSalesSummary.totalAmountPaid,
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      {/* Sales Summary */}
-      {summaryData && summaryData.bunkerSalesSummary && (
-        <div className="table-wrapper">
-          <h3>Sales Summary</h3>
-          <table className="modern-table">
-
-            <tbody>
-              <tr>
-                <td>Total Amount Remaining to Recover</td>
-                <td>{formatValue(summaryData.bunkerSalesSummary.totalAmountRemainingToRecover)}</td>
-              </tr>
-              <tr>
-                <td>Total Kgs Sold</td>
-                <td>{formatValue(summaryData.bunkerSalesSummary.totalKgsSold)}</td>
-              </tr>
-              <tr>
-                <td>Total Discount Given</td>
-                <td>{formatValue(summaryData.bunkerSalesSummary.totalDiscountGiven)}</td>
-              </tr>
-              <tr>
-                <td>Total Amount Paid (Sales)</td>
-                <td>{formatValue(summaryData.bunkerSalesSummary.totalAmountPaid)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Available Stock */}
-      {summaryData && (
-        <div className="table-wrapper">
-          <h3>Available Stock</h3>
-          <table className="modern-table">
-            <tbody>
-              <tr>
-                <td>Available Stock</td>
-                <td>{formatValue(summaryData.availableStock)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-
-
-
+        {/* Available Stock */}
+        {summaryData && (
+          <div className="table-wrapper">
+            <h3>Available Stock</h3>
+            <table className="modern-table">
+              <tbody>
+                <tr>
+                  <td>Available Stock</td>
+                  <td>{formatValue(summaryData.availableStock)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       <h2>Expenses</h2>
 
       <div className="table-wrapper">
+{loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
+            </div>
+          </div>
+        )}
         <table className="modern-table">
           <thead>
             <tr>
@@ -653,23 +832,21 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           <tbody>
             {expenses.length === 0 ? (
               <tr>
-                <td colSpan={6} className="no-data">No records found</td>
+                <td colSpan={6} className="no-data">
+                  No records found
+                </td>
               </tr>
             ) : (
-              expenses.map(e => {
+              expenses.map((e) => {
                 const amount = Number(e.amount) || 0;
                 const paid = Number(e.amountPaid) || 0;
                 const remainingAmount = Math.max(amount - paid, 0);
 
                 return (
-                  <tr
-                    key={e._id}
-
-                  >
+                  <tr key={e._id}>
                     <td className={remainingAmount > 0 ? "pending-cell" : ""}>
                       {e.name}
                     </td>
-
 
                     <td>{amount.toFixed(2)}</td>
                     <td>{paid.toFixed(2)}</td>
@@ -677,31 +854,65 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                     <td>{new Date(e.date || e.createdAt).toLocaleString()}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-edit" onClick={() => {
-                          setEditingExpense(e);
-                          setEditPaid(paid);
-                        }}>
+                        <button
+                          className="btn-edit"
+                          onClick={() => {
+                            setEditingExpense(e);
+                            setEditPaid(paid);
+                          }}
+                        >
                           Edit
                         </button>
-                        <button className="btn-delete" onClick={() => deleteExpense(e._id)}>
+                        <button
+                          className="btn-delete"
+                          onClick={() => deleteExpense(e._id)}
+                        >
                           Delete
                         </button>
                       </div>
                     </td>
                   </tr>
-
                 );
               })
             )}
           </tbody>
         </table>
       </div>
+      <div className="pagination-buttons">
+        <button
+          disabled={expencePage <= 1}
+          onClick={() => handleExpencePageChange("previous")}
+        >
+          Previous
+        </button>
 
+        <span className="page-info">
+          Current Page: <strong>{expencePage}</strong> | Total Pages:{" "}
+          <strong>{expenceTotalPages}</strong> | Total Records:{" "}
+          <strong>{expenceTotalRecords}</strong>
+        </span>
 
+        <button
+          disabled={expencePage >= expenceTotalPages}
+          onClick={() => handleExpencePageChange("next")}
+        >
+          Next
+        </button>
+      </div>
 
       <h2>Silage Purchases</h2>
 
       <div className="table-wrapper">
+{loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
+            </div>
+          </div>
+        )}
         <table className="modern-table">
           <thead>
             <tr>
@@ -719,19 +930,18 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           <tbody>
             {buys.length === 0 ? (
               <tr>
-                <td colSpan={8} className="no-data">No records found</td>
+                <td colSpan={8} className="no-data">
+                  No records found
+                </td>
               </tr>
             ) : (
-              buys.map(b => {
+              buys.map((b) => {
                 const grossAmount = b.quantity * b.price;
                 const paid = Number(b.amountPaid) || 0;
-                const remainingAmount =b.totalAmount - paid;
+                const remainingAmount = b.totalAmount - paid;
 
                 return (
-                  <tr
-                    key={b._id}
-
-                  >
+                  <tr key={b._id}>
                     <td className={remainingAmount > 0 ? "pending-cell" : ""}>
                       {b.quantity}
                     </td>
@@ -744,7 +954,8 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                     <td>{new Date(b.createdAt).toLocaleString()}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-edit"
+                        <button
+                          className="btn-edit"
                           onClick={() => {
                             setEditingBuy(b);
                             setEditPaid(paid);
@@ -752,7 +963,10 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                         >
                           Edit
                         </button>
-                        <button className="btn-delete" onClick={() => deleteBuy(b._id)}>
+                        <button
+                          className="btn-delete"
+                          onClick={() => deleteBuy(b._id)}
+                        >
                           Delete
                         </button>
                       </div>
@@ -764,9 +978,40 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           </tbody>
         </table>
       </div>
+      <div className="pagination-buttons">
+        <button
+          disabled={buyPage <= 1}
+          onClick={() => handleBuyPageChange("previous")}
+        >
+          Previous
+        </button>
+
+        <span className="page-info">
+          Current Page: <strong>{buyPage}</strong> | Total Pages:{" "}
+          <strong>{buyTotalPages}</strong> | Total Records:{" "}
+          <strong>{buyTotalRecords}</strong>
+        </span>
+
+        <button
+          disabled={buyPage >= buyTotalPages}
+          onClick={() => handleBuyPageChange("next")}
+        >
+          Next
+        </button>
+      </div>
       <h2>Silage Sales</h2>
 
       <div className="table-wrapper">
+{loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
+            </div>
+          </div>
+        )}
         <table className="modern-table">
           <thead>
             <tr>
@@ -785,19 +1030,20 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           <tbody>
             {sales.length === 0 ? (
               <tr>
-                <td colSpan={8} className="no-data">No records found</td>
+                <td colSpan={8} className="no-data">
+                  No records found
+                </td>
               </tr>
             ) : (
-              sales.map(s => {
+              sales.map((s) => {
                 const paid = Number(s.amountPaid) || 0;
-                const remainingAmount =s.totalAmount - paid;
+                const remainingAmount = s.totalAmount - paid;
 
                 return (
-                  <tr
-                    key={s._id}
-
-                  >
-                    <td className={remainingAmount > 0 ? "pending-cell" : ""}>{s.customerName}</td>
+                  <tr key={s._id}>
+                    <td className={remainingAmount > 0 ? "pending-cell" : ""}>
+                      {s.customerName}
+                    </td>
                     <td>{s.kgsSold}</td>
                     <td>{s.price.toFixed(2)}</td>
                     <td>{(s.discount || 0).toFixed(2)}</td>
@@ -807,7 +1053,8 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                     <td>{new Date(s.createdAt).toLocaleString()}</td>
                     <td>
                       <div className="action-buttons">
-                        <button className="btn-edit"
+                        <button
+                          className="btn-edit"
                           onClick={() => {
                             setEditingSale(s);
                             setEditPaid(paid);
@@ -815,7 +1062,10 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
                         >
                           Edit
                         </button>
-                        <button className="btn-delete" onClick={() => deleteSale(s._id)}>
+                        <button
+                          className="btn-delete"
+                          onClick={() => deleteSale(s._id)}
+                        >
                           Delete
                         </button>
                       </div>
@@ -827,15 +1077,38 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           </tbody>
         </table>
       </div>
+      <div className="pagination-buttons">
+        <button
+          disabled={sellPage <= 1}
+          onClick={() => handleSellPageChange("previous")}
+        >
+          Previous
+        </button>
 
+        <span className="page-info">
+          Current Page: <strong>{sellPage}</strong> | Total Pages:{" "}
+          <strong>{sellTotalPages}</strong> | Total Records:{" "}
+          <strong>{sellTotalRecords}</strong>
+        </span>
+
+        <button
+          disabled={sellPage >= sellTotalPages}
+          onClick={() => handleSellPageChange("next")}
+        >
+          Next
+        </button>
+      </div>
 
       {loading && <p className="no-data">Loading...</p>}
       {(editingExpense || editingBuy || editingSale) && (
-        <div className="modal-overlay" onClick={() => {
-          setEditingExpense(null);
-          setEditingBuy(null);
-          setEditingSale(null);
-        }}>
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setEditingExpense(null);
+            setEditingBuy(null);
+            setEditingSale(null);
+          }}
+        >
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">Edit Paid Amount</h3>
 
@@ -874,9 +1147,6 @@ const formatValue = (value) => (value ? value.toFixed(2) : "0.00");
           </div>
         </div>
       )}
-
-
-
     </div>
   );
 };
@@ -894,9 +1164,5 @@ const FormCard = ({ title, children, onSubmit, loading }) => (
     </form>
   </section>
 );
-
-
-
-
 
 export default BunkerDetails;

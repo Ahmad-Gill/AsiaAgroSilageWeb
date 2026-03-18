@@ -13,6 +13,8 @@ const TotalSales = () => {
   const [sales, setSales] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [totalPages, seTtotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const [filters, setFilters] = useState({
     limit: 10,
@@ -20,6 +22,7 @@ const TotalSales = () => {
     billNo: "",
     paymentStatus: "all",
     date: "",
+    page: 1, // Pagination for sales
   });
 
   const [updateModal, setUpdateModal] = useState({
@@ -62,6 +65,8 @@ const TotalSales = () => {
         headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
       });
       setSales(res.data.data || []);
+      seTtotalPages(res.data.meta.totalPages)
+      setTotalRecords(res.data.meta.totalRecords)
     } catch (error) {
       console.error("Sales fetch error", error);
     }
@@ -71,7 +76,7 @@ const TotalSales = () => {
   useEffect(() => {
     fetchSales();
     fetchSummary();
-  }, [filters]);
+  }, [filters]); // Fetch data when filters change
 
   /* ===================== UPDATE SALE ===================== */
   const submitUpdate = async () => {
@@ -130,9 +135,28 @@ const TotalSales = () => {
     }
   };
 
+  /* ===================== HANDLE PAGE CHANGES ===================== */
+  const handlePageChange = (direction) => {
+    setFilters((prevFilters) => {
+      const newPage =
+        direction === "next" ? prevFilters.page + 1 : prevFilters.page - 1;
+      return { ...prevFilters, page: newPage };
+    });
+  };
+
   /* ===================== UI ===================== */
   return (
     <div className="total-sales-page">
+      {loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
+            </div>
+          </div>
+        )}
       {/* ===== SUMMARY ===== */}
       <div className="summary-cards">
         <div>KGs Sold <span>{summary?.totalKgsSold || 0}</span></div>
@@ -188,7 +212,7 @@ const TotalSales = () => {
         />
       </div>
 
-      {/* ===== TABLE ===== */}
+      {/* ===== SALES TABLE ===== */}
       <table className="sales-table">
         <thead>
           <tr>
@@ -230,6 +254,30 @@ const TotalSales = () => {
           ))}
         </tbody>
       </table>
+
+      {/* ===== PAGINATION BUTTONS ===== */}
+      <div className="pagination-buttons">
+                  <button
+            disabled={filters.page <= 1}
+            onClick={() => handlePageChange("previous")}
+          >
+            Previous
+          </button>
+        <span className="page-info">
+          Current Page: <strong>{filters.page}</strong> | Total Pages:{" "}
+          <strong>{totalPages}</strong> | Total Records:{" "}
+          <strong>{totalRecords}</strong>
+        </span>
+        <div>
+
+          <button
+            disabled={filters.page >= summary?.totalPages}
+            onClick={() => handlePageChange("next")}
+          >
+            Next
+          </button>
+        </div>
+      </div>
 
       {/* ===== UPDATE MODAL ===== */}
       {updateModal.open && (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import PopupAlert from "../../components/popupAlert/PopupAlert"; // Import the PopupAlert component
 import "./bunker.css";
 
@@ -18,9 +18,16 @@ const Bunker = () => {
     status: 200,
     loading: false,
   });
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+  });
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+
   const navigate = useNavigate(); // useNavigate for programmatic navigation
 
-  // Fetch the list of bunkers
+  // Fetch the list of bunkers with pagination
   const fetchBunkers = async () => {
     if (!ADMIN_ACCESS_TOKEN) {
       navigate("/login");
@@ -33,8 +40,14 @@ const Bunker = () => {
         headers: {
           Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}`,
         },
+        params: {
+          page: filters.page,
+          limit: filters.limit,
+        },
       });
       setBunkers(response.data.data); // Populate bunkers state
+      setTotalPages(response.data.meta.totalPages); // Set total pages from response
+      setTotalRecords(response.data.meta.totalRecords); // Set total records from response
     } catch (error) {
       if (error.response?.status === 401) {
         navigate("/login");
@@ -44,9 +57,10 @@ const Bunker = () => {
     }
   };
 
+  // useEffect to fetch bunkers when component mounts or filters.page changes
   useEffect(() => {
-    fetchBunkers(); // Fetch bunkers when the component mounts
-  }, []);
+    fetchBunkers();
+  }, [filters.page]); // Dependency on filters.page to re-fetch when page changes
 
   // Handle bunker form submission
   const handleBunkerSubmit = async (e) => {
@@ -126,6 +140,15 @@ const Bunker = () => {
     navigate(`/bunkerdetails/${id}`);
   };
 
+  // Handle page change (Next or Previous)
+  const handlePageChange = (direction) => {
+    setFilters((prevFilters) => {
+      const newPage =
+        direction === "next" ? prevFilters.page + 1 : prevFilters.page - 1;
+      return { ...prevFilters, page: newPage };
+    });
+  };
+
   return (
     <div className="bunker-container">
       <h1>Bunkers</h1>
@@ -166,6 +189,33 @@ const Bunker = () => {
           )}
         </ul>
       )}
+
+      {/* Pagination controls */}
+      <div className="pagination-buttons">
+        <button
+          disabled={filters.page <= 1}
+          onClick={() => handlePageChange("previous")}
+          className="pagination-btn previous"
+        >
+          Previous
+        </button>
+
+        <div className="pagination-info">
+          <span className="page-info">
+            Current Page: <strong>{filters.page}</strong> | Total Pages:{" "}
+            <strong>{totalPages}</strong> | Total Records:{" "}
+            <strong>{totalRecords}</strong>
+          </span>
+        </div>
+
+        <button
+          disabled={filters.page >= totalPages}
+          onClick={() => handlePageChange("next")}
+          className="pagination-btn next"
+        >
+          Next
+        </button>
+      </div>
 
       {/* PopupAlert to show success or error messages */}
       <PopupAlert

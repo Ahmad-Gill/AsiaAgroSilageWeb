@@ -113,7 +113,8 @@ function StockEditModal({ stock, onClose, onUpdated }) {
         loading: false,
       });
 
-      onUpdated();
+      onUpdated(); // Notify parent about the update
+      onClose(); // Close the modal after the update
     } catch (error) {
       setPopup({
         open: true,
@@ -208,7 +209,7 @@ function StockEditModal({ stock, onClose, onUpdated }) {
           <button
             className="save-btn"
             onClick={handleUpdate}
-            disabled={isOverPayment}
+            disabled={isOverPayment} // Disable if over payment
           >
             Confirm Payment
           </button>

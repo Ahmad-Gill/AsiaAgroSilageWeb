@@ -3,8 +3,8 @@ import "./stockIn.css";
 import axios from "axios";
 import PopupAlert from "../../components/popupAlert/PopupAlert";
 
-
 function StockIn() {
+  // Initial form state
   const [form, setForm] = useState({
     clientName: "",
     description: "",
@@ -21,38 +21,38 @@ function StockIn() {
     scheduledDate: new Date().toISOString().split("T")[0],
   });
 
-const [popup, setPopup] = useState({
-  open: false,
-  message: "",
-  status: 200,
-});
+  // Popup state for success/error messages
+  const [popup, setPopup] = useState({
+    open: false,
+    message: "",
+    status: 200,
+    loading: false,
+  });
 
-
-const toTwoDecimals = (value) => {
-  const num = Number(value);
-  return isNaN(num) ? "" : num.toFixed(2);
-};
-
-
+  // Errors state for form validation
   const [errors, setErrors] = useState({});
+
+  // Helper function to format numbers to two decimals
+  const formatToTwoDecimals = (value) => {
+    return value ? Number(value).toFixed(2) : "";
+  };
 
   // ===============================
   // CALCULATIONS + VALIDATIONS
   // ===============================
   useEffect(() => {
     const newErrors = {};
-
     const weight = Number(form.weightPerKg);
     const price = Number(form.pricePerKg);
     const discountInput = Number(form.discount);
     const paidInput = Number(form.amountPaid);
 
-    // Required
+    // Required fields validation
     if (!form.clientName.trim()) newErrors.clientName = "Client name is required";
     if (!form.category) newErrors.category = "Category is required";
     if (!form.scheduledDate) newErrors.scheduledDate = "Date is required";
 
-    // Numeric rules
+    // Numeric validations
     if (weight < 0) newErrors.weightPerKg = "Weight cannot be negative";
     if (price < 0) newErrors.pricePerKg = "Price cannot be negative";
     if (discountInput < 0) newErrors.discount = "Discount cannot be negative";
@@ -62,30 +62,26 @@ const toTwoDecimals = (value) => {
     const safePrice = Math.max(price || 0, 0);
     const gross = safeWeight * safePrice;
 
-    if (discountInput > gross) {
-      newErrors.discount = "Discount cannot exceed gross total";
-    }
+    if (discountInput > gross) newErrors.discount = "Discount cannot exceed gross total";
 
     const discount = Math.min(Math.max(discountInput || 0, 0), gross);
     const net = gross - discount;
 
-    if (paidInput > net) {
-      newErrors.amountPaid = "Amount paid cannot exceed net total";
-    }
+    if (paidInput > net) newErrors.amountPaid = "Amount paid cannot exceed net total";
 
     const paid = Math.min(Math.max(paidInput || 0, 0), net);
 
+    // Update errors and form state
     setErrors(newErrors);
 
-setForm(prev => ({
-  ...prev,
-  discount: toTwoDecimals(discount),
-  amountPaid: toTwoDecimals(paid),
-  grossTotal: toTwoDecimals(gross),
-  netTotal: toTwoDecimals(net),
-  remainingAmount: toTwoDecimals(net - paid),
-}));
-
+    setForm((prev) => ({
+      ...prev,
+      discount: discount,
+      amountPaid: paid,
+      grossTotal: gross,
+      netTotal: net,
+      remainingAmount: net - paid,
+    }));
   }, [
     form.clientName,
     form.category,
@@ -99,130 +95,109 @@ setForm(prev => ({
   // ===============================
   // INPUT HANDLER (UPPERCASE FORCE)
   // ===============================
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Block negatives
-if (
-  ["weightPerKg", "pricePerKg", "discount", "amountPaid"].includes(name)
-) {
-  // allow only numbers + decimals
-  if (!/^\d*\.?\d*$/.test(value)) return;
+    // Block negative numbers and handle decimals
+    if (["weightPerKg", "pricePerKg", "discount", "amountPaid"].includes(name)) {
+      if (!/^\d*\.?\d*$/.test(value)) return; // Block anything other than numbers and decimal
+    }
 
-  setForm(prev => ({
-    ...prev,
-    [name]: value,
-  }));
-  return;
-}
-
-
-    // FORCE UPPERCASE TEXT FIELDS
-    const uppercaseFields = [
-      "clientName",
-      "description",
-      "driverName",
-      "vehicleNumber",
-    ];
-
-    setForm(prev => ({
+    // Force uppercase for text fields
+    const uppercaseFields = ["clientName", "description", "driverName", "vehicleNumber"];
+    setForm((prev) => ({
       ...prev,
-      [name]: uppercaseFields.includes(name)
-        ? value.toUpperCase()
-        : value,
+      [name]: uppercaseFields.includes(name) ? value.toUpperCase() : value,
     }));
   };
 
-const handleSubmit = async e => {
-  e.preventDefault();
+  // ===============================
+  // FORM SUBMIT HANDLER
+  // ===============================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (Object.keys(errors).length > 0) {
+    if (Object.keys(errors).length > 0) {
+      setPopup({
+        open: true,
+        message: "Please fix validation errors.",
+        status: 400,
+        loading: false,
+      });
+      return;
+    }
+
+    const adminToken = localStorage.getItem("adminToken");
+
+    if (!adminToken) {
+      setPopup({
+        open: true,
+        message: "Session expired. Please login again.",
+        status: 401,
+        loading: false,
+      });
+      return;
+    }
+
+    // Format all numeric values to two decimals before submitting
+    const payload = {
+      clientName: form.clientName.toUpperCase(),
+      driverName: form.driverName.toUpperCase(),
+      vehicleNumber: form.vehicleNumber.toUpperCase(),
+      description: form.description.toUpperCase(),
+      category: form.category,
+      pricePerKg: Number(form.pricePerKg).toFixed(2),  // Formatting here
+      weightPerKg: Number(form.weightPerKg).toFixed(2),  // Formatting here
+      discount: Number(form.discount).toFixed(2),  // Formatting here
+      amountPaid: Number(form.amountPaid).toFixed(2),  // Formatting here
+      scheduledDate: form.scheduledDate,
+    };
+
+    // Show loading popup
     setPopup({
       open: true,
-      message: "Please fix validation errors.",
-      status: 400,
-      loading: false,
+      message: "",
+      status: 200,
+      loading: true,
     });
-    return;
-  }
 
-  const adminToken = localStorage.getItem("adminToken");
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}admin/stock`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${adminToken}`,
+          },
+        }
+      );
 
-  if (!adminToken) {
-    setPopup({
-      open: true,
-      message: "Session expired. Please login again.",
-      status: 401,
-      loading: false,
-    });
-    return;
-  }
-
-  const payload = {
-    clientName: form.clientName.toUpperCase(),
-    driverName: form.driverName.toUpperCase(),
-    vehicleNumber: form.vehicleNumber.toUpperCase(),
-    description: form.description.toUpperCase(),
-    category: form.category,
-    pricePerKg: Number(form.pricePerKg),
-    weightPerKg: Number(form.weightPerKg),
-    discount: Number(form.discount),
-    amountPaid: Number(form.amountPaid),
-    scheduledDate: form.scheduledDate,
+      setPopup({
+        open: true,
+        message: "Stock In saved successfully",
+        status: response.status,
+        loading: false,
+      });
+    } catch (error) {
+      setPopup({
+        open: true,
+        message:
+          error.response?.data?.message || "Failed to save stock. Please try again.",
+        status: error.response?.status || 500,
+        loading: false,
+      });
+    }
   };
 
-  // 🔄 SHOW LOADING POPUP
-  setPopup({
-    open: true,
-    message: "",
-    status: 200,
-    loading: true,
-  });
-
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}admin/stock`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${adminToken}`,
-        },
-      }
-    );
-
-    setPopup({
-      open: true,
-      message: "Stock In saved successfully",
-      status: response.status,
-      loading: false,
-    });
-
-  } catch (error) {
-    setPopup({
-      open: true,
-      message:
-        error.response?.data?.message ||
-        "Failed to save stock. Please try again.",
-      status: error.response?.status || 500,
-      loading: false,
-    });
-  }
-};
-
-
-
-
-
+  // Check if there are any form validation errors
   const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    
     <div className="stockin-container">
       <h2>Stock In</h2>
 
       <form onSubmit={handleSubmit} className="stockin-form">
-
         {/* ================= Purchase Details ================= */}
         <div className="section">
           <h4>Purchase Details</h4>
@@ -257,17 +232,34 @@ const handleSubmit = async e => {
 
           <div className={`field ${errors.weightPerKg ? "error" : ""}`}>
             <label>Weight (Kg)</label>
-            <input step="0.01" type="number" name="weightPerKg" onChange={handleChange} />
+            <input
+              step="0.01"
+              type="number"
+              name="weightPerKg"
+              onChange={handleChange}
+            />
           </div>
 
           <div className={`field ${errors.pricePerKg ? "error" : ""}`}>
             <label>Price per Kg</label>
-            <input step="0.01" type="number" name="pricePerKg" onChange={handleChange} />
+            <input
+              step="0.01"
+              type="number"
+              name="pricePerKg"
+              onChange={handleChange}
+            />
           </div>
 
           <div className={`field ${errors.discount ? "error" : ""}`}>
             <label>Discount</label>
-            <input step="0.01"   type="number" name="discount" value={form.discount} onChange={handleChange} />
+            <input
+              type="text"
+              name="discount"
+              placeholder="e.g. 10.50"
+              value={form.discount || "0"}  // Ensures "0" is shown if empty
+              onChange={handleChange}
+            />
+            {errors.discount && <small>{errors.discount}</small>}
           </div>
 
           <div className="field">
@@ -282,7 +274,13 @@ const handleSubmit = async e => {
 
           <div className={`field ${errors.amountPaid ? "error" : ""}`}>
             <label>Amount Paid</label>
-            <input step="0.01"   type="number" name="amountPaid" value={form.amountPaid} onChange={handleChange} />
+            <input
+              step="0.01"
+              type="number"
+              name="amountPaid"
+              value={form.amountPaid}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="field">
@@ -317,24 +315,17 @@ const handleSubmit = async e => {
         </div>
 
         <div className="submit-row">
-<button type="submit">
-  Save Stock In
-</button>
-
+          <button type="submit">Save Stock In</button>
         </div>
-
       </form>
-<PopupAlert
-  open={popup.open}
-  message={popup.message}
-  status={popup.status}
-  loading={popup.loading}
-  onClose={() =>
-    setPopup(prev => ({ ...prev, open: false }))
-  }
-/>
 
-
+      <PopupAlert
+        open={popup.open}
+        message={popup.message}
+        status={popup.status}
+        loading={popup.loading}
+        onClose={() => setPopup((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 }

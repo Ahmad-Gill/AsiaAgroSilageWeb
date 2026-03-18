@@ -207,3 +207,80 @@
     font-size: 13px;
   }
 }
+
+
+
+/* Pagination Buttons */
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.pagination-buttons .page-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.pagination-buttons button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-buttons button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Modal and Action Buttons */
+button.save-btn,
+button.cancel-btn,
+button.btn-edit,
+button.btn-delete {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.save-btn:hover,
+button.btn-edit:hover {
+  background-color: #0056b3;
+}
+
+button.cancel-btn {
+  background-color: #dc3545;
+}
+
+button.cancel-btn:hover {
+  background-color: #c82333;
+}
+
+button.btn-delete {
+  background-color: #dc3545;
+  font-size: 14px;
+}
+
+button.btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Optional: You can apply some spacing to the buttons */
+button + button {
+  margin-left: 10px;
+}

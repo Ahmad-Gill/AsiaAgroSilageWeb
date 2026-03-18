@@ -7,379 +7,397 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TOKEN = localStorage.getItem("adminToken");
 
 const SpareParts = () => {
-    const [parts, setParts] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [editQuantity, setEditQuantity] = useState("");
-    const updateQuantity = async () => {
-        try {
-            setPopup({ open: true, loading: true, message: "Updating..." });
-
-           const res= await axios.put(
-                `${API_BASE_URL}admin/spare-parts/${editPart._id}`,
-                { quantity: Number(editQuantity) },
-                { headers }
-            );
-
-
-
-
-
-
-
-
-
-
-            
-            setPopup({
-                open: true,
-                message:res.data.message|| "Quantity updated successfully",
-                status: 200,
-                loading: false,
-            });
-
-            setEditPart(null);
-            fetchParts();
-        } catch (err) {
-            setPopup({
-                open: true,
-                message: "Update failed",
-                status: 400,
-                loading: false,
-            });
-        }
-    };
-
-    const deleteSparePart = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this spare part?")) {
-            return;
-        }
-
-        try {
-            setPopup({
-                open: true,
-                message: "Deleting...",
-                status: 200,
-                loading: true,
-            });
-
-            await axios.delete(
-                `${API_BASE_URL}admin/spare-parts/${id}`,
-                { headers }
-            );
-
-            setPopup({
-                open: true,
-                message: "Spare part deleted successfully",
-                status: 200,
-                loading: false,
-            });
-
-            fetchParts(); // 🔄 refresh list
-        } catch (err) {
-            setPopup({
-                open: true,
-                message:
-                    err.response?.data?.message || "Delete failed. Please try again.",
-                status: err.response?.status || 500,
-                loading: false,
-            });
-        }
-    };
-
-
-    const [filters, setFilters] = useState({
-        keyword: "",
-        limit: 10,
+  const [parts, setParts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editQuantity, setEditQuantity] = useState("");
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const handlePageChange = (direction) => {
+    setFilters((prevFilters) => {
+      const newPage =
+        direction === "next" ? prevFilters.page + 1 : prevFilters.page - 1;
+      return { ...prevFilters, page: newPage };
     });
+  };
+  const updateQuantity = async () => {
+    try {
+      setPopup({ open: true, loading: true, message: "Updating..." });
 
-    const [form, setForm] = useState({
-        name: "",
-        quantity: "",
-    });
+      const res = await axios.put(
+        `${API_BASE_URL}admin/spare-parts/${editPart._id}`,
+        { quantity: Number(editQuantity) },
+        { headers },
+      );
 
-    const [editPart, setEditPart] = useState(null);
-
-    const [popup, setPopup] = useState({
-        open: false,
-        message: "",
+      setPopup({
+        open: true,
+        message: res.data.message || "Quantity updated successfully",
         status: 200,
         loading: false,
-    });
+      });
 
-    const headers = {
-        Authorization: `Bearer ${TOKEN}`,
-        "Content-Type": "application/json",
-    };
+      setEditPart(null);
+      fetchParts();
+    } catch (err) {
+      setPopup({
+        open: true,
+        message: "Update failed",
+        status: 400,
+        loading: false,
+      });
+    }
+  };
 
-    /* ================= FETCH ================= */
-    const fetchParts = async () => {
-        try {
-            setLoading(true);
+  const deleteSparePart = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this spare part?")) {
+      return;
+    }
 
-            const res = await axios.get(
-                `${API_BASE_URL}admin/spare-parts`,
-                {
-                    params: {
-                        ...(filters.keyword && { keyword: filters.keyword }),
-                        ...(filters.limit && { limit: filters.limit }),
-                    },
-                    headers,
-                }
-            );
+    try {
+      setPopup({
+        open: true,
+        message: "Deleting...",
+        status: 200,
+        loading: true,
+      });
 
-            setParts(res.data.data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+      await axios.delete(`${API_BASE_URL}admin/spare-parts/${id}`, { headers });
 
-    useEffect(() => {
-        fetchParts();
-    }, []);
+      setPopup({
+        open: true,
+        message: "Spare part deleted successfully",
+        status: 200,
+        loading: false,
+      });
 
-    /* ================= CREATE ================= */
-    const handleCreate = async (e) => {
-        e.preventDefault();
+      fetchParts(); // 🔄 refresh list
+    } catch (err) {
+      setPopup({
+        open: true,
+        message:
+          err.response?.data?.message || "Delete failed. Please try again.",
+        status: err.response?.status || 500,
+        loading: false,
+      });
+    }
+  };
 
-        try {
-            setPopup({ open: true, loading: true, message: "Saving..." });
+  const [filters, setFilters] = useState({
+    keyword: "",
+    limit: 10,
+    page: 1,
+  });
 
-            await axios.post(
-                `${API_BASE_URL}admin/spare-parts`,
-                {
-                    name: form.name,
-                    quantity: Number(form.quantity),
-                },
-                { headers }
-            );
+  const [form, setForm] = useState({
+    name: "",
+    quantity: "",
+  });
 
-            setPopup({
-                open: true,
-                message: "Spare part created successfully",
-                status: 200,
-                loading: false,
-            });
+  const [editPart, setEditPart] = useState(null);
 
-            setForm({ name: "", quantity: "" });
-            fetchParts();
-        } catch (err) {
-            setPopup({
-                open: true,
-                message: err.response?.data?.message || "Create failed",
-                status: 400,
-                loading: false,
-            });
-        }
-    };
+  const [popup, setPopup] = useState({
+    open: false,
+    message: "",
+    status: 200,
+    loading: false,
+  });
 
-    /* ================= UPDATE ================= */
-    const handleUpdate = async () => {
-        try {
-            setPopup({ open: true, loading: true, message: "Updating..." });
+  const headers = {
+    Authorization: `Bearer ${TOKEN}`,
+    "Content-Type": "application/json",
+  };
 
-            await axios.put(
-                `${API_BASE_URL}admin/spare-parts/${editPart._id}`,
-                { quantity: Number(editPart.quantity) },
-                { headers }
-            );
+  /* ================= FETCH ================= */
+  const fetchParts = async () => {
+    try {
+      setLoading(true);
 
-            setPopup({
-                open: true,
-                message: "Spare part updated successfully",
-                status: 200,
-                loading: false,
-            });
+      const res = await axios.get(`${API_BASE_URL}admin/spare-parts`, {
+        params: {
+          ...(filters.keyword && { keyword: filters.keyword }),
+          ...(filters.limit && { limit: filters.limit }),
+          page: filters.page, // Use filters.page for pagination
+        },
+        headers,
+      });
 
-            setEditPart(null);
-            fetchParts();
-        } catch (err) {
-            setPopup({
-                open: true,
-                message: "Update failed",
-                status: 400,
-                loading: false,
-            });
-        }
-    };
+      setParts(res.data.data || []);
+      setTotalPages(res.data.meta.totalPages); // Set the total pages from the API response
+      setTotalRecords(res.data.meta.totalRecords); // Set the total records from the API response
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    /* ================= DELETE ================= */
-    const handleDelete = async (id) => {
-        if (!window.confirm("Delete this spare part?")) return;
+  useEffect(() => {
+    fetchParts();
+  }, []);
 
-        try {
-            setPopup({ open: true, loading: true, message: "Deleting..." });
+  /* ================= CREATE ================= */
+  const handleCreate = async (e) => {
+    e.preventDefault();
 
-            await axios.delete(
-                `${API_BASE_URL}admin/spare-parts/${id}`,
-                { headers }
-            );
+    try {
+      setPopup({ open: true, loading: true, message: "Saving..." });
 
-            setPopup({
-                open: true,
-                message: "Spare part deleted successfully",
-                status: 200,
-                loading: false,
-            });
+      await axios.post(
+        `${API_BASE_URL}admin/spare-parts`,
+        {
+          name: form.name,
+          quantity: Number(form.quantity),
+        },
+        { headers },
+      );
 
-            fetchParts();
-        } catch (err) {
-            setPopup({
-                open: true,
-                message: "Delete failed",
-                status: 400,
-                loading: false,
-            });
-        }
-    };
+      setPopup({
+        open: true,
+        message: "Spare part created successfully",
+        status: 200,
+        loading: false,
+      });
 
-    return (
-        <div className="spare-parts-page">
-            <h1>Spare Parts</h1>
+      setForm({ name: "", quantity: "" });
+      fetchParts();
+    } catch (err) {
+      setPopup({
+        open: true,
+        message: err.response?.data?.message || "Create failed",
+        status: 400,
+        loading: false,
+      });
+    }
+  };
 
-            {/* ===== Filters ===== */}
-            <div className="filters">
-                <input
-                    placeholder="Search keyword"
-                    value={filters.keyword}
-                    onChange={(e) =>
-                        setFilters({ ...filters, keyword: e.target.value })
-                    }
-                />
+  /* ================= UPDATE ================= */
+  const handleUpdate = async () => {
+    try {
+      setPopup({ open: true, loading: true, message: "Updating..." });
 
-                <input
-                    type="number"
-                    min={1}
-                    placeholder="Limit"
-                    value={filters.limit}
-                    onChange={(e) =>
-                        setFilters({
-                            ...filters,
-                            limit: Math.max(1, Number(e.target.value)),
-                        })
-                    }
-                />
+      await axios.put(
+        `${API_BASE_URL}admin/spare-parts/${editPart._id}`,
+        { quantity: Number(editPart.quantity) },
+        { headers },
+      );
 
-                <button onClick={fetchParts}>Apply</button>
+      setPopup({
+        open: true,
+        message: "Spare part updated successfully",
+        status: 200,
+        loading: false,
+      });
+
+      setEditPart(null);
+      fetchParts();
+    } catch (err) {
+      setPopup({
+        open: true,
+        message: "Update failed",
+        status: 400,
+        loading: false,
+      });
+    }
+  };
+
+  /* ================= DELETE ================= */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this spare part?")) return;
+
+    try {
+      setPopup({ open: true, loading: true, message: "Deleting..." });
+
+      await axios.delete(`${API_BASE_URL}admin/spare-parts/${id}`, { headers });
+
+      setPopup({
+        open: true,
+        message: "Spare part deleted successfully",
+        status: 200,
+        loading: false,
+      });
+
+      fetchParts();
+    } catch (err) {
+      setPopup({
+        open: true,
+        message: "Delete failed",
+        status: 400,
+        loading: false,
+      });
+    }
+  };
+  useEffect(() => {
+    fetchParts();
+  }, [filters.page]);
+  return (
+    <div className="spare-parts-page">
+      <h1>Spare Parts</h1>
+
+      {/* ===== Filters ===== */}
+      <div className="filters">
+        <input
+          placeholder="Search keyword"
+          value={filters.keyword}
+          onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+        />
+
+        {/* <input
+          type="number"
+          min={1}
+          placeholder="Limit"
+          value={filters.limit}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              limit: Math.max(1, Number(e.target.value)),
+            })
+          }
+        /> */}
+
+        <button onClick={fetchParts}>Apply</button>
+      </div>
+
+      {/* ===== Create Form ===== */}
+      <form className="create-form" onSubmit={handleCreate}>
+        <input
+          placeholder="Spare part name"
+          value={form.name}
+          required
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+
+        <input
+          type="number"
+          placeholder="Quantity"
+          value={form.quantity}
+          required
+          onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+        />
+
+        <button type="submit">Add</button>
+      </form>
+
+      {/* ===== Table ===== */}
+      <div className="table-wrapper">
+{loading && (
+          <div className="table-loader">
+            <div className="loader-animation">
+              <div className="tractor"></div>
+              <div className="soil"></div>
+              <div className="plant"></div>
+              <div className="sun"></div>
             </div>
+          </div>
+        )}
+        <table className="spare-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-            {/* ===== Create Form ===== */}
-            <form className="create-form" onSubmit={handleCreate}>
-                <input
-                    placeholder="Spare part name"
-                    value={form.name}
-                    required
-                    onChange={(e) =>
-                        setForm({ ...form, name: e.target.value })
-                    }
-                />
+          <tbody>
+            {parts.map((p) => {
+              const dateObj = new Date(p.date);
 
-                <input
-                    type="number"
-                    placeholder="Quantity"
-                    value={form.quantity}
-                    required
-                    onChange={(e) =>
-                        setForm({ ...form, quantity: e.target.value })
-                    }
-                />
+              return (
+                <tr key={p._id}>
+                  <td>{p.name}</td>
+                  <td>{p.quantity}</td>
 
-                <button type="submit">Add</button>
-            </form>
+                  {/* DATE */}
+                  <td>{dateObj.toLocaleDateString()}</td>
 
-            {/* ===== Table ===== */}
-            <div className="table-wrapper">
-                <table className="spare-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                  {/* TIME */}
+                  <td>{dateObj.toLocaleTimeString()}</td>
 
-                    <tbody>
-                        {parts.map((p) => {
-                            const dateObj = new Date(p.date);
-
-                            return (
-                                <tr key={p._id}>
-                                    <td>{p.name}</td>
-                                    <td>{p.quantity}</td>
-
-                                    {/* DATE */}
-                                    <td>{dateObj.toLocaleDateString()}</td>
-
-                                    {/* TIME */}
-                                    <td>{dateObj.toLocaleTimeString()}</td>
-
-                                    <td className="actions">
-                                        <button
-                                            className="btn-edit"
-                                            onClick={() => {
-                                                setEditPart(p);
-                                                setEditQuantity(p.quantity);
-                                            }}
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
-                                            className="btn-delete"
-                                            onClick={() => deleteSparePart(p._id)}
-                                        >
-                                            Delete
-                                        </button>
-
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-
-                </table>
-            </div>
-
-            {/* ===== Edit Modal ===== */}
-            {editPart && (
-                <div className="modal-overlay" onClick={() => setEditPart(null)}>
-                    <div
-                        className="modal-card"
-                        onClick={(e) => e.stopPropagation()}
+                  <td className="actions">
+                    <button
+                      className="btn-edit"
+                      onClick={() => {
+                        setEditPart(p);
+                        setEditQuantity(p.quantity);
+                      }}
                     >
-                        <h3>Edit Quantity</h3>
+                      Edit
+                    </button>
 
-                        <input
-                            type="number"
-                            value={editPart.quantity}
-                            onChange={(e) =>
-                                setEditPart({
-                                    ...editPart,
-                                    quantity: e.target.value,
-                                })
-                            }
-                        />
+                    <button
+                      className="btn-delete"
+                      onClick={() => deleteSparePart(p._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="pagination-buttons">
+        <button
+          disabled={filters.page <= 1} // Disable Previous button on first page
+          onClick={() => handlePageChange("previous")}
+          className="pagination-btn previous"
+        >
+          Previous
+        </button>
 
-                        <div className="modal-actions">
-                            <button onClick={() => setEditPart(null)}>Cancel</button>
-                            <button onClick={handleUpdate}>Save</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <PopupAlert
-                open={popup.open}
-                message={popup.message}
-                status={popup.status}
-                loading={popup.loading}
-                onClose={() => setPopup({ ...popup, open: false })}
-            />
+        <div className="pagination-info">
+          <span className="page-info">
+            Current Page: <strong>{filters.page}</strong> | Total Pages:{" "}
+            <strong>{totalPages}</strong> | Total Records:{" "}
+            <strong>{totalRecords}</strong>
+          </span>
         </div>
-    );
+
+        <button
+          disabled={filters.page >= totalPages} // Disable Next button on the last page
+          onClick={() => handlePageChange("next")}
+          className="pagination-btn next"
+        >
+          Next
+        </button>
+      </div>
+      {/* ===== Edit Modal ===== */}
+      {editPart && (
+        <div className="modal-overlay" onClick={() => setEditPart(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Quantity</h3>
+
+            <input
+              type="number"
+              value={editPart.quantity}
+              onChange={(e) =>
+                setEditPart({
+                  ...editPart,
+                  quantity: e.target.value,
+                })
+              }
+            />
+
+            <div className="modal-actions">
+              <button onClick={() => setEditPart(null)}>Cancel</button>
+              <button onClick={handleUpdate}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <PopupAlert
+        open={popup.open}
+        message={popup.message}
+        status={popup.status}
+        loading={popup.loading}
+        onClose={() => setPopup({ ...popup, open: false })}
+      />
+    </div>
+  );
 };
 
 export default SpareParts;
