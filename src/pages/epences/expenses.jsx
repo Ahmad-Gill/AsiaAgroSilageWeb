@@ -11,6 +11,49 @@ const Expenses = () => {
   const [categoryName, setCategoryName] = useState("");
   const [totalPages, settotalPages] = useState(0);
   const [totalRecords, settotalRecords] = useState(0);
+  // Handle Expense Deletion
+const handleDeleteExpense = async (expenseId) => {
+  try {
+    setLoading(true); // Set loading state to true while making the request
+
+    const response = await axios.delete(
+      `${API_BASE_URL}admin/expences/${expenseId}`, // API endpoint to delete the expense
+      {
+        headers: { Authorization: `Bearer ${ADMIN_ACCESS_TOKEN}` },
+      }
+    );
+
+    // Check if the deletion was successful (status code 200-299)
+    if (response.status >= 200 && response.status < 300) {
+      setPopup({
+        open: true,
+        message: "Expense deleted successfully!", // Success message
+        status: response.status,
+        loading: false,
+      });
+
+      fetchExpenses(); // Refresh the expenses list after deletion
+    } else {
+      setPopup({
+        open: true,
+        message: "Failed to delete expense.", // Error message for failure
+        status: response.status,
+        loading: false,
+      });
+    }
+  } catch (error) {
+    // Handle any errors that occur during the delete operation
+    console.error("Error deleting expense:", error);
+    setPopup({
+      open: true,
+      message: error.response?.data?.message || "Error deleting expense.",
+      status: error.response?.status || 400,
+      loading: false,
+    });
+  } finally {
+    setLoading(false); // Reset loading state after the API request
+  }
+};
   // State for category input
   const [categories, setCategories] = useState([]); // State for categories list
   const [selectedCategory, setSelectedCategory] = useState(""); // State for selected category ID
