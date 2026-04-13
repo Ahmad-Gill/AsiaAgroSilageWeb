@@ -8,6 +8,7 @@ import StockOut from "./pages/stock/stockOut";
 import TotalStock from "./pages/stock/TotalStock";
 import BunkerDetails from "./pages/bunker/bunkerDetails";
 import BUnker from "./pages/bunker/bunker";
+import SparePartsCategory from "./pages/spareParts/sparePartsCategory";
 import SpareParts from "./pages/spareParts/spareParts";
 import Expenses from "./pages/epences/expenses";
 import SalePage from "./pages/sale/sale";
@@ -32,7 +33,8 @@ function App() {
         <Route path="/stock" element={<TotalStock />} />
         <Route path="/client-ledger" element={<ClientLedger />} />
        <Route path="/bunker" element={<BUnker />} />
-        <Route path="/spare-parts" element={<SpareParts />} />
+        <Route path="/spare-parts" element={<SparePartsCategory />} />
+         <Route path="/sparepartscategorydetails/:id" element={<SpareParts />} />
         <Route path="/home" element={<Home />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/sale" element={<SalePage />} />

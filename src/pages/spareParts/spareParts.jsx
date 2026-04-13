@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./spareParts.css";
 import PopupAlert from "../../components/popupAlert/PopupAlert";
+import { useParams } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TOKEN = localStorage.getItem("adminToken");
 
 const SpareParts = () => {
   const [parts, setParts] = useState([]);
+  const { id } = useParams(); // Destructure categoryId from the URL params
+
   const [loading, setLoading] = useState(false);
   const [editQuantity, setEditQuantity] = useState("");
   const [totalPages, setTotalPages] = useState(0);
@@ -110,10 +113,12 @@ const SpareParts = () => {
   /* ================= FETCH ================= */
   const fetchParts = async () => {
     try {
-      setLoading(true);
+      (console.log("Fetching parts with categoryId:", id),
+        setLoading(true));
 
       const res = await axios.get(`${API_BASE_URL}admin/spare-parts`, {
         params: {
+          ...(id && { category: id }), // If categoryId is passed, include it in the request
           ...(filters.keyword && { keyword: filters.keyword }),
           ...(filters.limit && { limit: filters.limit }),
           page: filters.page, // Use filters.page for pagination
@@ -130,10 +135,9 @@ const SpareParts = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchParts();
-  }, []);
+  }, [id]); // Dependency on categoryId so it re-fetches when it changes
 
   /* ================= CREATE ================= */
   const handleCreate = async (e) => {
@@ -279,7 +283,7 @@ const SpareParts = () => {
 
       {/* ===== Table ===== */}
       <div className="table-wrapper">
-{loading && (
+        {loading && (
           <div className="table-loader">
             <div className="loader-animation">
               <div className="tractor"></div>
