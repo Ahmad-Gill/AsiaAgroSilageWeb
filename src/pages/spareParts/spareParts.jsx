@@ -151,6 +151,7 @@ const SpareParts = () => {
         {
           name: form.name,
           quantity: Number(form.quantity),
+          category: id, 
         },
         { headers },
       );
